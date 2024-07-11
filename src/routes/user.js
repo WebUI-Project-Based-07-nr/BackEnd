@@ -17,12 +17,148 @@ router.use(authMiddleware)
 
 router.param('id', idValidation)
 
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '~/docs/schemas/users/get-users'
+ *       401:
+ *         description: Unauthorized access
+ *       500:
+ *         description: Server error
+ */
 router.get('/', asyncWrapper(userController.getUsers))
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: ID of the user
+ *       400:
+ *         description: Invalid request parameters
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
 router.get('/:id', isEntityValid({ params }), asyncWrapper(userController.getUserById))
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   patch:
+ *     summary: Update a user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '~/docs/schemas/UpdateUserRequest'
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       400:
+ *         description: Invalid request body or parameters
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
 router.patch('/:id', isEntityValid({ params }), asyncWrapper(userController.updateUser))
 
 router.use(restrictTo(ADMIN))
+
+/**
+ * @swagger
+ * /users/{id}/change-status:
+ *   patch:
+ *     summary: Change user status by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: User status changed successfully
+ *       400:
+ *         description: Invalid request parameters
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
 router.patch('/:id/change-status', isEntityValid({ params }), asyncWrapper(userController.updateStatus))
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Delete a user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     responses:
+ *       204:
+ *         description: User deleted successfully
+ *       400:
+ *         description: Invalid request parameters
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
 router.delete('/:id', isEntityValid({ params }), asyncWrapper(userController.deleteUser))
 
 module.exports = router
