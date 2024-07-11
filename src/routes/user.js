@@ -29,7 +29,7 @@ router.param('id', idValidation)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '~/docs/schemas/users/get-users'
+ *               $ref: '#/components/schemas/GetUsersResponse'
  *       401:
  *         description: Unauthorized access
  *       500:
@@ -90,7 +90,7 @@ router.get('/:id', isEntityValid({ params }), asyncWrapper(userController.getUse
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/UpdateUserRequest'
+ *             $ref: '#/components/schemas/UpdateUserParams'
  *     responses:
  *       200:
  *         description: User updated successfully

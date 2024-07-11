@@ -54,7 +54,7 @@ router.get('/', isEntityValid({ params }), asyncWrapper(messageController.getMes
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/send-message-request'
+ *             $ref: '#/components/schemas/SendMessageRequest'
  *     responses:
  *       201:
  *         description: Message sent successfully

@@ -30,7 +30,7 @@ router.param('id', idValidation)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '~/docs/schemas/offers/get-offers'
+ *               $ref: '#/components/schemas/GetOffersResponse'
  *       401:
  *         description: Unauthorized access
  *       500:
@@ -49,7 +49,7 @@ router.get('/', asyncWrapper(offerController.getOffers))
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/offers/create-offer'
+ *             $ref: '#/components/schemas/CreateOfferRequest'
  *     responses:
  *       201:
  *         description: Offer created successfully
@@ -81,7 +81,7 @@ router.post('/', isEntityValid({ body }), asyncWrapper(offerController.createOff
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '~/docs/schemas/offers/get-offer-by-id'
+ *               $ref: '#/components/schemas/GetOfferByIdParams'
  *       400:
  *         description: Invalid request parameters
  *       401:
@@ -111,7 +111,7 @@ router.get('/:id', isEntityValid({ params }), asyncWrapper(offerController.getOf
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/offers/update-offer'
+ *             $ref: '#/components/schemas/UpdateOfferParams'
  *     responses:
  *       200:
  *         description: Offer updated successfully

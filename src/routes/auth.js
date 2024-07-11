@@ -22,7 +22,7 @@ const forgotPasswordValidationSchema = require('~/validation/schemas/forgotPassw
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/auth/signup'
+ *             $ref: '#/components/schemas/Signup'
  *     responses:
  *       201:
  *         description: User successfully created
@@ -47,7 +47,7 @@ router.post(
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/auth/login'
+ *             $ref: '#/components/schemas/Login'
  *     responses:
  *       200:
  *         description: Successful login
@@ -100,7 +100,7 @@ router.get('/refresh', asyncWrapper(authController.refreshAccessToken))
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/auth/forgot-password'
+ *             $ref: '#/components/schemas/ForgotPassword'
  *     responses:
  *       200:
  *         description: Password recovery email sent.
@@ -132,7 +132,7 @@ router.post(
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/auth/reset-password'
+ *             $ref: '#/components/schemas/ResetPassword'
  *     responses:
  *       200:
  *         description: Password successfully reset.

@@ -29,7 +29,7 @@ router.use(restrictTo(TUTOR))
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '~docs/schemas/resources/get-resources'
+ *               $ref: '#/components/schemas/GetResourcesCategoriesResponse'
  *       401:
  *         description: Unauthorized access
  *       500:
@@ -70,7 +70,7 @@ router.get('/names', asyncWrapper(resourcesCategoryController.getResourcesCatego
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/resources/create-resources-category'
+ *             $ref: '#/components/schemas/CreateResourcesCategoryRequest'
  *     responses:
  *       201:
  *         description: Resource category created successfully
@@ -101,7 +101,7 @@ router.post('/', asyncWrapper(resourcesCategoryController.createResourcesCategor
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~docs/schemas/resources/update-resource-category'
+ *             $ref: '#/components/schemas/UpdateResourceCategoryParams'
  *     responses:
  *       200:
  *         description: Resource category updated successfully

@@ -16,7 +16,7 @@ const emailController = require('~/controllers/email')
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/email/send-email.js'
+ *             $ref: '#/components/schemas/SendEmail'
  *     responses:
  *       200:
  *         description: Email sent successfully

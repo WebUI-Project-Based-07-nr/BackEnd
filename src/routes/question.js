@@ -28,7 +28,7 @@ const params = [{ model: Question, idName: 'id' }]
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '~/docs/schemas/questions/get-questions'
+ *               $ref: '#/components/schemas/GetQuestionsResponse'
  *       401:
  *         description: Unauthorized access
  *       500:
@@ -55,7 +55,7 @@ router.get('/', asyncWrapper(questionController.getQuestions))
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '~/docs/schemas/questions/get-question-by-id'
+ *               $ref: '#/components/schemas/GetQuestionByIdParams'
  *       400:
  *         description: Invalid request parameters
  *       401:
@@ -79,7 +79,7 @@ router.use(restrictTo(TUTOR))
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/questions/create-question'
+ *             $ref: '#/components/schemas/CreateQuestionRequest'
  *     responses:
  *       201:
  *         description: Question created successfully
@@ -137,7 +137,7 @@ router.delete('/:id', isEntityValid({ params }), asyncWrapper(questionController
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '~/docs/schemas/questions/update-question-by-id'
+ *             $ref: '#/components/schemas/UpdateQuestionParams'
  *     responses:
  *       200:
  *         description: Question updated successfully
