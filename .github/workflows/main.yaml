@@ -82,16 +82,3 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: SonarCloud Quality Gate
-        id: quality_gate
-        uses: sonarsource/sonarcloud-github-action@v1.2
-        with:
-            projectKey: your_project_key
-            organization: your_organization
-            token: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Fail if Quality Gate failed
-        if: steps.quality_gate.outputs.status != 'PASSED'
-        run: exit 1
-
