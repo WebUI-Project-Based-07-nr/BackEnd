@@ -24,4 +24,25 @@ describe("ID validation middleware", () => {
         idValidation(mockRequest, mockResponse, mockNextFunc, validId)
         expect(mockNextFunc).toHaveBeenCalled()
     })
+
+    test('Should throw error with 400 status and INVALID_ID errorInfo when id is invalid', () => {
+        const invalidId = "invalid-id"
+
+        createError.mockImplementation((status, errorInfo) => {
+            const err = new Error(errorInfo.message)
+            err.status = status
+            err.code = errorInfo.status
+
+            throw err
+        })
+
+        expect(() => idValidation(
+            mockRequest,
+            mockResponse,
+            mockNextFunc,
+            invalidId
+        )).toThrow(INVALID_ID.message);
+        expect(mockNextFunc).not.toHaveBeenCalled()
+        expect(createError).toHaveBeenCalledWith(400, INVALID_ID);
+    })
 })
