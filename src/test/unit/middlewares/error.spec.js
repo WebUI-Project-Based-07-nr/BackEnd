@@ -119,4 +119,23 @@ describe("Error middleware", () => {
             err.message
         )
     })
+
+    test('Should handle error with status and code', () => {
+        const err = {
+            status: 400,
+            code: "BAD_REQUEST",
+            message: "bad request"
+        }
+
+        errorMiddleware(err, {}, res, next)
+
+        expectErrorHandling(
+            res,
+            logger,
+            err,
+            400,
+            err.code,
+            err.message
+        )
+    })
 })
