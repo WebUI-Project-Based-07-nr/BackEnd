@@ -59,4 +59,21 @@ describe("Error middleware", () => {
         }))
         expect(logger.error).toHaveBeenCalledWith(err)
     })
+
+    test('Should handle ValidationError', () => {
+        const err = {
+            name: "ValidationError",
+            message: "validation failed"
+        }
+
+        errorMiddleware(err, {}, res, next)
+
+        expect(res.status).toHaveBeenCalledWith(409)
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+            status: 409,
+            code: VALIDATION_ERROR(err.message).code,
+            message: VALIDATION_ERROR(err.message).message
+        }))
+        expect(logger.error).toHaveBeenCalledWith(err)
+    })
 })
