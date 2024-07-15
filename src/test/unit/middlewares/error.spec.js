@@ -41,4 +41,22 @@ describe("Error middleware", () => {
         expect(logger.error).toHaveBeenCalledWith(err)
         expect(getUniqueFields).toHaveBeenCalledWith(err.message)
     })
+
+    test('Should handle MongoServerError with non-11000 code', () => {
+        const err = {
+            name: "MongoServerError",
+            code: 12345,
+            message: "some non-11000 mongo error"
+        }
+
+        errorMiddleware(err, {}, res, next)
+
+        expect(res.status).toHaveBeenCalledWith(500)
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+            status: 500,
+            code: MONGO_SERVER_ERROR(err.message).code,
+            message: MONGO_SERVER_ERROR(err.message).message
+        }))
+        expect(logger.error).toHaveBeenCalledWith(err)
+    })
 })
