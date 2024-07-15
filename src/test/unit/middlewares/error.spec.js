@@ -5,6 +5,11 @@ const {
     MONGO_SERVER_ERROR,
     VALIDATION_ERROR
 } = require('~/consts/errors')
+const {
+    expectErrorStatus,
+    expectJSON,
+    expectLogger
+} = require("~/test/helpers")
 const logger = require('~/logger/logger')
 const getUniqueFields = require('~/utils/getUniqueFields')
 
@@ -13,6 +18,24 @@ jest.mock('~/utils/getUniqueFields')
 
 describe("Error middleware", () => {
     let res, next;
+
+    const expectErrorHandling = (
+        res,
+        logger,
+        err,
+        expectedStatus,
+        expectedCode,
+        expectedMessage
+    ) => {
+        expectErrorStatus(res.status, expectedStatus);
+        expectJSON(res.json, {
+            status: expectedStatus,
+            code: expectedCode,
+            message: expectedMessage
+        });
+        expectLogger(logger.error, err);
+    };
+
 
     beforeEach(() => {
         res = {
@@ -32,13 +55,14 @@ describe("Error middleware", () => {
         getUniqueFields.mockReturnValue('email')
         errorMiddleware(err, {}, res, next);
 
-        expect(res.status).toHaveBeenCalledWith(409)
-        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-            status: 409,
-            code: DOCUMENT_ALREADY_EXISTS('email').code,
-            message: DOCUMENT_ALREADY_EXISTS('email').message,
-        }))
-        expect(logger.error).toHaveBeenCalledWith(err)
+        expectErrorHandling(
+            res,
+            logger,
+            err,
+            409,
+            DOCUMENT_ALREADY_EXISTS('email').code,
+            DOCUMENT_ALREADY_EXISTS('email').message,
+        )
         expect(getUniqueFields).toHaveBeenCalledWith(err.message)
     })
 
@@ -51,13 +75,14 @@ describe("Error middleware", () => {
 
         errorMiddleware(err, {}, res, next)
 
-        expect(res.status).toHaveBeenCalledWith(500)
-        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-            status: 500,
-            code: MONGO_SERVER_ERROR(err.message).code,
-            message: MONGO_SERVER_ERROR(err.message).message
-        }))
-        expect(logger.error).toHaveBeenCalledWith(err)
+        expectErrorHandling(
+            res,
+            logger,
+            err,
+            500,
+            MONGO_SERVER_ERROR(err.message).code,
+            MONGO_SERVER_ERROR(err.message).message,
+        )
     })
 
     test('Should handle ValidationError', () => {
@@ -68,12 +93,30 @@ describe("Error middleware", () => {
 
         errorMiddleware(err, {}, res, next)
 
-        expect(res.status).toHaveBeenCalledWith(409)
-        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-            status: 409,
-            code: VALIDATION_ERROR(err.message).code,
-            message: VALIDATION_ERROR(err.message).message
-        }))
-        expect(logger.error).toHaveBeenCalledWith(err)
+        expectErrorHandling(
+            res,
+            logger,
+            err,
+            409,
+            VALIDATION_ERROR(err.message).code,
+            VALIDATION_ERROR(err.message).message,
+        )
+    })
+
+    test('Should handle generic error without status and code', () => {
+        const err = {
+            message: 'unknown error'
+        }
+
+        errorMiddleware(err, {}, res, next)
+
+        expectErrorHandling(
+            res,
+            logger,
+            err,
+            500,
+            INTERNAL_SERVER_ERROR.code,
+            err.message
+        )
     })
 })
