@@ -15,6 +15,13 @@ jest.mock('~/configs/config');
 
 
 describe("Email service", () => {
+    const expectedSender = (user, email, templateSubject, html) => ({
+        from: `Space2Study <${user}>`,
+        to: email,
+        subject: templateSubject,
+        html
+    })
+
     beforeEach(() => {
         jest.clearAllMocks()
     })
@@ -24,7 +31,6 @@ describe("Email service", () => {
         const subject = "EMAIL_CONFIRMATION"
         const language = "en"
         const text = { name: "John" }
-        const user = gmailCredentials.user
 
         const template = "en/confirm-email"
         const templateSubject = "Please confirm your email"
@@ -44,11 +50,33 @@ describe("Email service", () => {
         await emailService.sendEmail(email, subject, language, text)
 
         expect(EmailTemplates.prototype.render).toHaveBeenCalledWith(template, text)
-        expect(sendMail).toHaveBeenCalledWith({
-            from: `Space2Study <${user}>`,
-            to: email,
-            subject: templateSubject,
-            html
-        })
+        expect(sendMail).toHaveBeenCalledWith(expectedSender(gmailCredentials.user, email, templateSubject, html))
+    })
+
+    test('Should throw an error if sendEmail fails', async () => {
+        const email = "test@example.com"
+        const subject = "EMAIL_CONFIRMATION"
+        const language = "en"
+        const text = { name: "John" }
+
+        const template = "en/confirm-email"
+        const templateSubject = "Please confirm your email"
+
+        templateList[subject] = {
+            [language]: {
+                template,
+                subject: templateSubject
+            }
+        }
+
+        const html = '<h1>Greetings</h1>'
+
+        EmailTemplates.prototype.render.mockResolvedValue(html)
+        sendMail.mockRejectedValue(new Error("Failed to send email"))
+
+        await expect(emailService.sendEmail(email, subject, language, text)).rejects.toThrow("Failed to send email")
+
+        expect(EmailTemplates.prototype.render).toHaveBeenCalledWith(template, text)
+        expect(sendMail).toHaveBeenCalledWith(expectedSender(gmailCredentials.user, email, templateSubject, html))
     })
 })
