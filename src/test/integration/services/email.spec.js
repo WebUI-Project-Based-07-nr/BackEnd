@@ -113,7 +113,6 @@ describe("Email service", () => {
         const email = "test@example.com"
         const subject = "EMAIL_CONFIRMATION"
         const language = "en"
-        const text = {}
 
         const template = 'en/confirm-email';
         const templateSubject = 'Please confirm your email';
@@ -122,12 +121,9 @@ describe("Email service", () => {
         setUpTemplateList(subject, language, template, templateSubject);
         mockAndRenderEmail(html)
 
-        EmailTemplates.prototype.render.mockResolvedValue(html)
-        sendMail.mockResolvedValue()
+        await emailService.sendEmail(email, subject, language)
 
-        await emailService.sendEmail(email, subject, language, text)
-
-        expect(EmailTemplates.prototype.render).toHaveBeenCalledWith(template, text)
+        expect(EmailTemplates.prototype.render).toHaveBeenCalledWith(template, {})
         expect(sendMail).toHaveBeenCalledWith(expectedSender(user, email, templateSubject, html))
     })
 })
