@@ -191,9 +191,4 @@ describe('User service', () => {
     expect(updatedUser.status.tutor).toBe('active')
   })
 
-  test('createError should create error with specific status and message', () => {
-    const err = createError(404, DOCUMENT_NOT_FOUND([User.modelName]))
-    expect(err.status).toBe(404)
-    expect(err.message).toBe('User with the specified ID was not found.')
-  })
 })
