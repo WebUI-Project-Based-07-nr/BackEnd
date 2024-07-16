@@ -79,4 +79,29 @@ describe("Email service", () => {
         expect(EmailTemplates.prototype.render).toHaveBeenCalledWith(template, text)
         expect(sendMail).toHaveBeenCalledWith(expectedSender(gmailCredentials.user, email, templateSubject, html))
     })
+
+    test('Should throw an error when template is not found', async () => {
+        const email = "test@example.com"
+        const subject = "nonexistent"
+        const language = "en"
+        const text = { name: "John" }
+
+        templateList[subject] = undefined;
+
+        createError.mockImplementation((status, errorInfo) => {
+            const err = new Error(errorInfo.message)
+            err.status = status
+            err.code = errorInfo.code
+
+            return err
+        })
+
+        await expect(emailService.sendEmail(email, subject, language, text))
+            .rejects
+            .toThrowError(TEMPLATE_NOT_FOUND)
+
+        expect(createError).toHaveBeenCalledWith(404, TEMPLATE_NOT_FOUND)
+        expect(EmailTemplates.prototype.render).not.toHaveBeenCalled()
+        expect(sendMail).not.toHaveBeenCalled()
+    })
 })
