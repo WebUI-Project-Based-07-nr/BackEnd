@@ -89,4 +89,19 @@ describe("Validation middleware", () => {
 
         expect(next).toHaveBeenCalled()
     })
+
+    test('Should not call validateFunc when field is not present', () => {
+        req.body = {}
+
+        const schema = {
+            field: {
+                required: true,
+                type: 'string',
+            }
+        }
+
+        validationMiddleware(schema)(req, res, next)
+
+        expect(validateFunc.type).not.toHaveBeenCalled()
+    })
 })
