@@ -77,4 +77,16 @@ describe("Validation middleware", () => {
         expect(validateFunc.regex).toHaveBeenCalledWith('field', '/^[a-z]+$/i', 'value')
         expect(validateFunc.enum).toHaveBeenCalledWith('field', ['value', 'value2'], 'value')
     })
+
+    test('Should call next when validation passes', () => {
+        req.body = { field: 'value' }
+
+        const schema = {
+            field: { required: true }
+        }
+
+        validationMiddleware(schema)(req, res, next)
+
+        expect(next).toHaveBeenCalled()
+    })
 })
