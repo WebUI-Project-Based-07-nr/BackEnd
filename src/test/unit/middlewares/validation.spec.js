@@ -41,4 +41,18 @@ describe("Validation middleware", () => {
         expect(() => validationMiddleware(schema)(req, res, next))
             .toThrow(createError(422, BODY_IS_NOT_DEFINED))
     })
+
+    test('Should call validateRequired for each field in schema', () => {
+        req.body = { field1: "value1", field2: "value2" }
+
+        const schema = {
+            field1: { required: true },
+            field2: { required: true }
+        }
+
+        validationMiddleware(schema)(req, res, next)
+
+        expect(validateRequired).toHaveBeenCalledWith('field1', true, 'value1')
+        expect(validateRequired).toHaveBeenCalledWith('field2', true, 'value2')
+    })
 })
