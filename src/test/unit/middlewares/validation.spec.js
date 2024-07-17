@@ -55,4 +55,26 @@ describe("Validation middleware", () => {
         expect(validateRequired).toHaveBeenCalledWith('field1', true, 'value1')
         expect(validateRequired).toHaveBeenCalledWith('field2', true, 'value2')
     })
+
+    test('Should call validateFunc for validationType', () => {
+        req.body = { field: 'value' }
+
+        const schema = {
+            field: {
+                required: true,
+                type: 'string',
+                length: { min: 3, max: 10 },
+                regex: '/^[a-z]+$/i',
+                enum: ['value', 'value2']
+            }
+        }
+
+        validationMiddleware(schema)(req, res, next)
+
+        expect(validateFunc.required).toHaveBeenCalledWith('field', true, 'value')
+        expect(validateFunc.type).toHaveBeenCalledWith('field', 'string', 'value')
+        expect(validateFunc.length).toHaveBeenCalledWith('field', { min: 3, max: 10 }, 'value')
+        expect(validateFunc.regex).toHaveBeenCalledWith('field', '/^[a-z]+$/i', 'value')
+        expect(validateFunc.enum).toHaveBeenCalledWith('field', ['value', 'value2'], 'value')
+    })
 })
