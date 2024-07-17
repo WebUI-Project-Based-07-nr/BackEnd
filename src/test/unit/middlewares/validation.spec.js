@@ -31,6 +31,8 @@ describe("Validation middleware", () => {
         req = { body: {} }
         res = {}
         next = jest.fn()
+
+        jest.clearAllMocks()
     })
 
     test('Should throw BODY_IS_NOT_DEFINED with 422 status when body is not defined', () => {
