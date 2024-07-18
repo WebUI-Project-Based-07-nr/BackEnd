@@ -70,22 +70,14 @@ jobs:
           GMAIL_REDIRECT_URI: ${{secrets.GMAIL_REDIRECT_URI}}
           COOKIE_DOMAIN: ${{secrets.COOKIE_DOMAIN}}
 
-      - name: 'List coverage directory'
-        if: always()
-        run: ls -l src/test/coverage
-
-      - name: 'Adjust LCOV paths'
-        if: always()
-        run: |
-          if [ -f src/***/coverage/lcov.info ]; then
-            sed -i 's|SF:.*/src/|SF:src/|' src/***/coverage/lcov.info
-          else
-            echo "lcov.info not found"
-          fi
-
-      - name: 'Check LCOV file contents'
-        if: always()
-        run: cat src/***/coverage/lcov.info
+#      - name: 'Adjust LCOV paths'
+#        if: always()
+#        run: |
+#          if [ -f src/***/coverage/lcov.info ]; then
+#            sed -i 's|SF:.*/src/|SF:src/|' src/***/coverage/lcov.info
+#          else
+#            echo "lcov.info not found"
+#          fi
 
       - name: 'SonarCloud scan'
         uses: SonarSource/sonarcloud-github-action@master
@@ -102,7 +94,7 @@ jobs:
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
             -Dsonar.sources=src
             -Dsonar.tests=src/***
-            -Dsonar.exclusions=src/***/coverage/**,node_modules/**
+            -Dsonar.exclusions=src/test/**,node_modules/**
             -Dsonar.coverage.exclusions=src/constants/*,src/***/coverage/**
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.javascript.lcov.reportPaths=src/***/coverage/lcov.info
