@@ -67,7 +67,7 @@ jobs:
 
       - name: 'Adjust LCOV paths'
         run: |
-          sed -i -e 's,SF:,SF:src/,' src/test/coverage/lcov.info
+          sed -i 's|SF:.*/src/|SF:src/|' src/test/coverage/lcov.info
 
       - name: 'SonarCloud scan'
         uses: SonarSource/sonarcloud-github-action@master
@@ -79,13 +79,12 @@ jobs:
           args: >
             -Dsonar.projectKey=WebUI-Project-Based-07-nr_BackEnd
             -Dsonar.organization=webui-project-based-07-nr
-            -Dsonar.organizationKey=webui-project-based-07-nr
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
             -Dsonar.sources=./src
             -Dsonar.tests=./src/test
-            -Dsonar.exclusions=**/src/test/**,**/node_modules/**,**/src/logger/**,**/src/seed/**
-            -Dsonar.coverage.exclusions=**/src/constants/*,**/src/tests/**/*
+            -Dsonar.exclusions=**/node_modules/**,**/src/logger/**,**/src/seed/**
+            -Dsonar.coverage.exclusions=**/src/constants/**,**/src/tests/**/*
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.javascript.lcov.reportPaths=./src/test/coverage/lcov.info
             -Dsonar.testExecutionReportPaths=./test-report.xml
