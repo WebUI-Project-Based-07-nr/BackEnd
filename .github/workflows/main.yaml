@@ -65,6 +65,10 @@ jobs:
           GMAIL_REDIRECT_URI: ${{secrets.GMAIL_REDIRECT_URI}}
           COOKIE_DOMAIN: ${{secrets.COOKIE_DOMAIN}}
 
+      - name: 'Adjust LCOV paths'
+        run: |
+          sed -i -e 's,SF:,SF:src/,' src/test/coverage/lcov.info
+
       - name: 'SonarCloud scan'
         uses: SonarSource/sonarcloud-github-action@master
         if: success() || failure()
