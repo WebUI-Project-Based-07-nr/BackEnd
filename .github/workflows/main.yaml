@@ -71,6 +71,7 @@ jobs:
           COOKIE_DOMAIN: ${{secrets.COOKIE_DOMAIN}}
 
       - name: 'List coverage directory'
+        if: always()
         run: ls -l src/test/coverage
 
       - name: 'Adjust LCOV paths'
@@ -87,6 +88,7 @@ jobs:
         run: cat src/test/coverage/lcov.info
 
       - name: 'List files'
+        if: always()
         run: ls -R src
 
 
@@ -105,7 +107,7 @@ jobs:
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
             -Dsonar.sources=src
             -Dsonar.tests=src/test
-            -Dsonar.exclusions=**/src/test/**,**/node_modules/**,**/src/logger/**,**/src/seed/**
+            -Dsonar.exclusions=**/src/test/**,**/node_modules/**
             -Dsonar.coverage.exclusions=**/src/constants/*,**/src/tests/**/*
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.javascript.lcov.reportPaths=src/test/coverage/lcov.info
