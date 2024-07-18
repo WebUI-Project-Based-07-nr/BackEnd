@@ -102,9 +102,9 @@ jobs:
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
             -Dsonar.sources=src
             -Dsonar.tests=src/***
-            -Dsonar.exclusions=src/***/coverage/**,node_modules/**,src/seed/**
+            -Dsonar.exclusions=src/***/coverage/**,node_modules/**
             -Dsonar.coverage.exclusions=src/constants/*,src/***/coverage/**
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.javascript.lcov.reportPaths=src/***/coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=src/***/test-report.xml
+            -Dsonar.testExecutionReportPaths=test-report.xml
             -Dsonar.qualitygate.wait=true
