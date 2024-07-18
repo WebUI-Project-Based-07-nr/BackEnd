@@ -65,15 +65,18 @@ jobs:
           GMAIL_REDIRECT_URI: ${{secrets.GMAIL_REDIRECT_URI}}
           COOKIE_DOMAIN: ${{secrets.COOKIE_DOMAIN}}
 
+      - name: 'List coverage directory'
+        run: ls -l src/test/coverage
+
       - name: 'Adjust LCOV paths'
         if: always()
         run: |
           if [ -f src/test/coverage/lcov.info ]; then
             sed -i 's|SF:.*/src/|SF:src/|' src/test/coverage/lcov.info
           else
-            echo "lcov.info not found!"
+            echo "lcov.info not found"
           fi
-          
+
       - name: 'Check LCOV file contents'
         if: always()
         run: cat src/test/coverage/lcov.info
@@ -99,5 +102,6 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=./src/test/coverage/lcov.info
             -Dsonar.testExecutionReportPaths=./test-report.xml
             -Dsonar.qualitygate.wait=true
+            -X
 
     
