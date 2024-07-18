@@ -107,6 +107,3 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=./src/test/coverage/lcov.info
             -Dsonar.testExecutionReportPaths=./test-report.xml
             -Dsonar.qualitygate.wait=true
-            -X
-
-    
