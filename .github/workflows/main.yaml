@@ -70,23 +70,6 @@ jobs:
           GMAIL_REDIRECT_URI: ${{secrets.GMAIL_REDIRECT_URI}}
           COOKIE_DOMAIN: ${{secrets.COOKIE_DOMAIN}}
 
-      - name: 'Adjust LCOV paths'
-        if: always()
-        run: |
-          if [ -f src/test/coverage/lcov.info ]; then
-            sed -i 's|SF:.*/src/|SF:src/|' src/test/coverage/lcov.info
-          else
-            echo "lcov.info not found"
-          fi
-
-      - name: 'Check LCOV report'
-        if: always()
-        run: |
-          if [ -f src/test/coverage/lcov.info ]; then
-            cat src/test/coverage/lcov.info
-          else
-            echo "lcov.info not found"
-          fi
 
       - name: 'SonarCloud scan'
         uses: SonarSource/sonarcloud-github-action@master
@@ -94,18 +77,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=WebUI-Project-Based-07-nr_BackEnd
-            -Dsonar.organization=webui-project-based-07-nr
-            -Dsonar.organizationKey=webui-project-based-07-nr
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.sources=src
-            -Dsonar.tests=src/test
-            -Dsonar.exclusions=src/test/**,node_modules/**
-            -Dsonar.coverage.exclusions=src/constants/*,src/test/**
-            -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.javascript.lcov.reportPaths=src/test/coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=test-report.xml
-            -Dsonar.qualitygate.wait=true
