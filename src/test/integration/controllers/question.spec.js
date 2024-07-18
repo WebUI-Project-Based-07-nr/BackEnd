@@ -43,6 +43,9 @@ app.get('/questions/:id',
 app.post('/questions', async (req, res) => {
     await createQuestion(req, res)
 })
+app.delete('/questions/:id', async (req, res) => {
+    await deleteQuestion(req, res)
+})
 
 describe('Question controller', () => {
     beforeAll(async () => {
@@ -235,6 +238,19 @@ describe('Question controller', () => {
                 type: 'multiple-choice',
                 category: 'Geography',
             })
+        })
+    })
+
+    describe('deleteQuestion', () => {
+        test('Should delete a question', async () => {
+            questionService.deleteQuestion.mockResolvedValue();
+
+            const res = await request(app)
+                .delete('/questions/questionId1')
+                .set('user', JSON.stringify({ id: 'userId1' }));
+
+            expect(res.status).toBe(204);
+            expect(questionService.deleteQuestion).toHaveBeenCalledWith('questionId1', 'userId1');
         })
     })
 })
