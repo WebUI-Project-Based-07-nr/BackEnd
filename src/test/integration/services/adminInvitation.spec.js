@@ -3,7 +3,6 @@ const emailSubject = require('~/consts/emailSubject')
 const AdminInvitation = require('~/models/adminInvitation')
 const adminInvitationService = require('~/services/adminInvitation')
 
-
 jest.mock('~/services/email')
 jest.mock('~/models/adminInvitation')
 
@@ -40,6 +39,25 @@ describe("adminInvitation service", () => {
                     { email }
                 )
             })
+        })
+    })
+
+    describe('getAdminInvitations', () => {
+        test('Should retrieve all admin invitations', async () => {
+            const invitations = [
+                { email: "test1@example.com", dateOfInvitation: new Date() },
+                { email: "test2@example.com", dateOfInvitation: new Date() },
+            ]
+
+            AdminInvitation.find.mockReturnValue({
+                lean: jest.fn().mockReturnThis(),
+                exec: jest.fn().mockResolvedValue(invitations)
+            })
+
+            const result = await adminInvitationService.getAdminInvitations()
+
+            expect(AdminInvitation.find).toHaveBeenCalled()
+            expect(result).toEqual(invitations)
         })
     })
 })
