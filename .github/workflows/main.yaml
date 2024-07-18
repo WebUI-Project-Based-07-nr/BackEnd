@@ -70,14 +70,14 @@ jobs:
           GMAIL_REDIRECT_URI: ${{secrets.GMAIL_REDIRECT_URI}}
           COOKIE_DOMAIN: ${{secrets.COOKIE_DOMAIN}}
 
-#      - name: 'Adjust LCOV paths'
-#        if: always()
-#        run: |
-#          if [ -f src/***/coverage/lcov.info ]; then
-#            sed -i 's|SF:.*/src/|SF:src/|' src/***/coverage/lcov.info
-#          else
-#            echo "lcov.info not found"
-#          fi
+      - name: 'Adjust LCOV paths'
+        if: always()
+        run: |
+          if [ -f src/***/coverage/lcov.info ]; then
+            sed -i 's|SF:.*/src/|SF:src/|' src/***/coverage/lcov.info
+          else
+            echo "lcov.info not found"
+          fi
 
       - name: 'SonarCloud scan'
         uses: SonarSource/sonarcloud-github-action@master
