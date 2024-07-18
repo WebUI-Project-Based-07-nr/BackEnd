@@ -78,7 +78,7 @@ jobs:
             -Dsonar.organizationKey=webui-project-based-07-nr
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.sources=.
+            -Dsonar.sources=./src
             -Dsonar.tests=./src/test
             -Dsonar.exclusions=**/src/test/**,**/node_modules/**,**/src/logger/**,**/src/seed/**
             -Dsonar.coverage.exclusions=**/src/constants/*,**/src/tests/**/*
