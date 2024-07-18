@@ -79,6 +79,14 @@ jobs:
             echo "lcov.info not found"
           fi
 
+      - name: 'Check LCOV report'
+        run: |
+          if [ -f src/test/coverage/lcov.info ]; then
+            cat src/test/coverage/lcov.info
+          else
+            echo "lcov.info not found"
+          fi
+
       - name: 'SonarCloud scan'
         uses: SonarSource/sonarcloud-github-action@master
         if: success() || failure()
