@@ -86,6 +86,10 @@ jobs:
         if: always()
         run: cat src/test/coverage/lcov.info
 
+      - name: 'List files'
+        run: ls -R src
+
+
       - name: 'SonarCloud scan'
         uses: SonarSource/sonarcloud-github-action@master
         if: success() || failure()
