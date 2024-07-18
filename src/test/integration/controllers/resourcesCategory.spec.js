@@ -57,7 +57,7 @@ describe('ResourceCategory controller', () => {
   })
 
   describe(`POST ${endpointUrl}`, () => {
-    it('should create a new reesource category', async () => {
+    it('should create a new resource category', async () => {
       expect(testResourceCategory.statusCode).toBe(201)
       expect(testResourceCategory._body).toMatchObject({
         _id: expect.any(String),
