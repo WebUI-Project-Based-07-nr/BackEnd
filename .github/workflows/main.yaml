@@ -66,6 +66,7 @@ jobs:
           COOKIE_DOMAIN: ${{secrets.COOKIE_DOMAIN}}
 
       - name: 'Adjust LCOV paths'
+        if: always()
         run: |
           if [ -f src/test/coverage/lcov.info ]; then
             sed -i 's|SF:.*/src/|SF:src/|' src/test/coverage/lcov.info
