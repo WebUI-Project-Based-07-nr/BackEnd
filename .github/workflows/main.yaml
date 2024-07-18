@@ -93,10 +93,10 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
             -Dsonar.sources=src
-            -Dsonar.tests=src/***
+            -Dsonar.tests=src/test
             -Dsonar.exclusions=src/test/**,node_modules/**
-            -Dsonar.coverage.exclusions=src/constants/*,src/***/coverage/**
+            -Dsonar.coverage.exclusions=src/constants/*,src/coverage/**
             -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.javascript.lcov.reportPaths=src/***/coverage/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=src/coverage/lcov.info
             -Dsonar.testExecutionReportPaths=test-report.xml
             -Dsonar.qualitygate.wait=true
