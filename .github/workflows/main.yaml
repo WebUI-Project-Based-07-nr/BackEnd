@@ -77,20 +77,15 @@ jobs:
       - name: 'Adjust LCOV paths'
         if: always()
         run: |
-          if [ -f src/test/coverage/lcov.info ]; then
-            sed -i 's|SF:.*/src/|SF:src/|' src/test/coverage/lcov.info
+          if [ -f src/***/coverage/lcov.info ]; then
+            sed -i 's|SF:.*/src/|SF:src/|' src/***/coverage/lcov.info
           else
             echo "lcov.info not found"
           fi
 
       - name: 'Check LCOV file contents'
         if: always()
-        run: cat src/test/coverage/lcov.info
-
-      - name: 'List files'
-        if: always()
-        run: ls -R src
-
+        run: cat src/***/coverage/lcov.info
 
       - name: 'SonarCloud scan'
         uses: SonarSource/sonarcloud-github-action@master
@@ -106,10 +101,10 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
             -Dsonar.sources=src
-            -Dsonar.tests=src/test
-            -Dsonar.exclusions=**/src/test/**,**/node_modules/**
-            -Dsonar.coverage.exclusions=**/src/constants/*,**/src/tests/**/*
+            -Dsonar.tests=src/***
+            -Dsonar.exclusions=**/src/***/coverage/**,**/node_modules/**,**/src/seed/**
+            -Dsonar.coverage.exclusions=**/src/constants/*,**/src/***/coverage/**
             -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.javascript.lcov.reportPaths=src/test/coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=test-report.xml
+            -Dsonar.javascript.lcov.reportPaths=src/***/coverage/lcov.info
+            -Dsonar.testExecutionReportPaths=src/***/test-report.xml
             -Dsonar.qualitygate.wait=true
