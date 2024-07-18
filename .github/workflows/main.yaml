@@ -98,5 +98,5 @@ jobs:
             -Dsonar.coverage.exclusions=src/constants/*,src/test/**
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.javascript.lcov.reportPaths=src/test/coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=./test-report.xml
+            -Dsonar.testExecutionReportPaths=test-report.xml
             -Dsonar.qualitygate.wait=true
