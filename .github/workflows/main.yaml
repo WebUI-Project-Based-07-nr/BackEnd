@@ -99,11 +99,11 @@ jobs:
             -Dsonar.organizationKey=webui-project-based-07-nr
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.sources=./src
-            -Dsonar.tests=./src/test
+            -Dsonar.sources=src
+            -Dsonar.tests=src/test
             -Dsonar.exclusions=**/src/test/**,**/node_modules/**,**/src/logger/**,**/src/seed/**
             -Dsonar.coverage.exclusions=**/src/constants/*,**/src/tests/**/*
             -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.javascript.lcov.reportPaths=./src/test/coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=./test-report.xml
+            -Dsonar.javascript.lcov.reportPaths=src/test/coverage/lcov.info
+            -Dsonar.testExecutionReportPaths=test-report.xml
             -Dsonar.qualitygate.wait=true
