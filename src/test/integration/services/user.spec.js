@@ -190,5 +190,4 @@ describe('User service', () => {
     expect(updatedUser.status.student).toBe('inactive')
     expect(updatedUser.status.tutor).toBe('active')
   })
-
 })
