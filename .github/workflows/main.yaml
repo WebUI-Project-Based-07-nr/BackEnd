@@ -80,6 +80,7 @@ jobs:
           fi
 
       - name: 'Check LCOV report'
+        if: always()
         run: |
           if [ -f src/test/coverage/lcov.info ]; then
             cat src/test/coverage/lcov.info
