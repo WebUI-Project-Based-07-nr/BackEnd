@@ -40,6 +40,9 @@ app.get('/questions/:id',
     isEntityValid( { params: [ {model: Question, idName: 'id' }] } ),
     asyncWrapper(getQuestionById)
 )
+app.post('/questions', async (req, res) => {
+    await createQuestion(req, res)
+})
 
 describe('Question controller', () => {
     beforeAll(async () => {
@@ -178,6 +181,60 @@ describe('Question controller', () => {
             expect(res.body).toEqual({})
             expect(Question.findById).not.toHaveBeenCalledWith()
             expect(questionService.getQuestionById).not.toHaveBeenCalledWith()
+        })
+    })
+
+    describe('createQuestion', () => {
+        test('Should create a new question', async () => {
+            const mockQuestion = {
+                _id: 'questionId1',
+                title: 'Question 1',
+                text: 'What is the capital of France?',
+                answers: [
+                    { text: 'Paris', isCorrect: true },
+                    { text: 'London', isCorrect: false },
+                    { text: 'Berlin', isCorrect: false },
+                    { text: 'Madrid', isCorrect: false },
+                ],
+                type: 'multiple-choice',
+                category: 'Geography',
+                author: 'userId1',
+            };
+
+            questionService.createQuestion.mockResolvedValue(mockQuestion)
+
+            const res = await request(app)
+                .post('/questions')
+                .send({
+                    _id: 'questionId1',
+                    title: 'Question 1',
+                    text: 'What is the capital of France?',
+                    answers: [
+                        { text: 'Paris', isCorrect: true },
+                        { text: 'London', isCorrect: false },
+                        { text: 'Berlin', isCorrect: false },
+                        { text: 'Madrid', isCorrect: false },
+                    ],
+                    type: 'multiple-choice',
+                    category: 'Geography',
+                })
+                .set('user', JSON.stringify({ id: 'userId1' }))
+
+            expect(res.status).toBe(201)
+            expect(res.body).toEqual(mockQuestion)
+            expect(questionService.createQuestion).toHaveBeenCalledWith('userId1', {
+                _id: 'questionId1',
+                title: 'Question 1',
+                text: 'What is the capital of France?',
+                answers: [
+                    { text: 'Paris', isCorrect: true },
+                    { text: 'London', isCorrect: false },
+                    { text: 'Berlin', isCorrect: false },
+                    { text: 'Madrid', isCorrect: false },
+                ],
+                type: 'multiple-choice',
+                category: 'Geography',
+            })
         })
     })
 })
