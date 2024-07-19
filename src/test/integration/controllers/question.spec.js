@@ -6,6 +6,7 @@ const {
     getQuestionById,
     createQuestion,
     deleteQuestion,
+    updateQuestion
 } = require('~/controllers/question');
 const questionService = require('~/services/question');
 const getCategoriesOptions = require('~/utils/getCategoriesOption')
@@ -16,7 +17,7 @@ const isEntityValid = require('~/middlewares/entityValidation')
 const asyncWrapper = require('~/middlewares/asyncWrapper')
 const Question = require('~/models/question')
 const { FORBIDDEN } = require('~/consts/errors')
-const { updateQuestionHandler, updateQuestion } = require('~/test/helpers')
+const { updateQuestionHandler, updateQuestionHelper } = require('~/test/helpers')
 
 jest.mock('~/services/question')
 jest.mock('~/utils/getCategoriesOption')

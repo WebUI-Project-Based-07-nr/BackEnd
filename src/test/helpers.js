@@ -30,7 +30,7 @@ const updateQuestionHandler = async (req, res, updateQuestionService) => {
   }
 };
 
-const updateQuestion = (req, res) => {
+const updateQuestionHelper = (req, res) => {
   return updateQuestionHandler(req, res, questionService.updateQuestion);
 };
 
@@ -40,5 +40,5 @@ module.exports = {
   expectJSON,
   expectLogger,
   updateQuestionHandler,
-  updateQuestion
+  updateQuestionHelper
 }
