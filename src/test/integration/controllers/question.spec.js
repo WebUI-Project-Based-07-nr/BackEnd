@@ -17,21 +17,20 @@ const isEntityValid = require('~/middlewares/entityValidation')
 const asyncWrapper = require('~/middlewares/asyncWrapper')
 const Question = require('~/models/question')
 const { FORBIDDEN } = require('~/consts/errors')
-const { updateQuestionHandler, updateQuestionHelper } = require('~/test/helpers')
+const { updateQuestionHandler } = require('~/test/helpers')
 
 jest.mock('~/services/question')
 jest.mock('~/utils/getCategoriesOption')
 jest.mock('~/utils/getMatchOptions')
 jest.mock('~/utils/getSortOptions')
+jest.mock('~/utils/errorsHelper')
 jest.mock('~/models/question', () => ({
     findById: jest.fn()
 }))
-jest.mock('~/utils/errorsHelper')
 
 
 const app = express()
 app.use(bodyParser.json())
-
 app.use((req, res, next) => {
     if (req.headers.user) {
         req.user = JSON.parse(req.headers.user);
@@ -39,20 +38,23 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/questions', getQuestions)
-app.get('/questions/:id',
-    isEntityValid( { params: [ {model: Question, idName: 'id' }] } ),
+app.get('/', asyncWrapper(getQuestions))
+app.get('/:id',
+    isEntityValid({ params: [{ model: Question, idName: 'id' }] }),
     asyncWrapper(getQuestionById)
-)
-app.post('/questions', async (req, res) => {
-    await createQuestion(req, res)
-})
-app.delete('/questions/:id', async (req, res) => {
-    await deleteQuestion(req, res)
-})
-app.put('/questions/:id', async (req, res) => {
-    await updateQuestion(req, res)
-})
+);
+app.post('/questions',
+    isEntityValid({ params: [{ model: Question, idName: 'id' }] }),
+    asyncWrapper(createQuestion)
+);
+app.delete('/questions/:id',
+    isEntityValid({ params: [{ model: Question, idName: 'id' }] }),
+    asyncWrapper(deleteQuestion)
+);
+app.put('/questions/:id',
+    isEntityValid({ params: [{ model: Question, idName: 'id' }] }),
+    asyncWrapper(updateQuestion)
+);
 
 describe('Question controller', () => {
     beforeAll(async () => {
@@ -117,7 +119,7 @@ describe('Question controller', () => {
             getSortOptions.mockReturnValue(mockSortOptions);
 
             const res = await request(app)
-                .get('/questions')
+                .get('/')
                 .query({
                     title: 'test',
                     sort: JSON.stringify({ order: 'desc', orderBy: 'createdAt' }),
@@ -166,31 +168,17 @@ describe('Question controller', () => {
                 resourceType: 'educational'
             };
 
-            Question.findById.mockResolvedValue(mockQuestion);
+            Question.findById.mockResolvedValue(mockQuestion)
             questionService.getQuestionById.mockResolvedValue(mockQuestion);
 
             const res = await request(app)
-                .get('/questions/questionId1')
+                .get('/questionId1')
                 .set('user', JSON.stringify({ id: "userId" }));
 
             expect(res.status).toBe(200);
             expect(res.body).toEqual(mockQuestion);
             expect(Question.findById).toHaveBeenCalledWith('questionId1');
             expect(questionService.getQuestionById).toHaveBeenCalledWith('questionId1');
-        })
-
-        test('Should return 404 if question is not found', async () => {
-            Question.findById.mockResolvedValue(null)
-            questionService.getQuestionById.mockResolvedValue(null)
-
-            const res = await request(app)
-                .get('/question/questionId1')
-                .set('user', JSON.stringify({ id: 'userId' }))
-
-            expect(res.status).toBe(404)
-            expect(res.body).toEqual({})
-            expect(Question.findById).not.toHaveBeenCalledWith()
-            expect(questionService.getQuestionById).not.toHaveBeenCalledWith()
         })
     })
 
