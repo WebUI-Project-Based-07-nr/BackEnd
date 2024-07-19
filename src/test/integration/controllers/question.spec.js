@@ -6,7 +6,6 @@ const {
     getQuestionById,
     createQuestion,
     deleteQuestion,
-    updateQuestion
 } = require('~/controllers/question');
 const questionService = require('~/services/question');
 const getCategoriesOptions = require('~/utils/getCategoriesOption')
@@ -16,14 +15,18 @@ const { connect, closeDatabase, clearDatabase } = require('~/test/dbHandler')
 const isEntityValid = require('~/middlewares/entityValidation')
 const asyncWrapper = require('~/middlewares/asyncWrapper')
 const Question = require('~/models/question')
+const { FORBIDDEN } = require('~/consts/errors')
+const { updateQuestionHandler, updateQuestion } = require('~/test/helpers')
 
 jest.mock('~/services/question')
 jest.mock('~/utils/getCategoriesOption')
 jest.mock('~/utils/getMatchOptions')
 jest.mock('~/utils/getSortOptions')
 jest.mock('~/models/question', () => ({
-    findById: jest.fn() // Corrected mock definition
-}));
+    findById: jest.fn()
+}))
+jest.mock('~/utils/errorsHelper')
+
 
 const app = express()
 app.use(bodyParser.json())
@@ -45,6 +48,9 @@ app.post('/questions', async (req, res) => {
 })
 app.delete('/questions/:id', async (req, res) => {
     await deleteQuestion(req, res)
+})
+app.put('/questions/:id', async (req, res) => {
+    await updateQuestion(req, res)
 })
 
 describe('Question controller', () => {
@@ -251,6 +257,88 @@ describe('Question controller', () => {
 
             expect(res.status).toBe(204);
             expect(questionService.deleteQuestion).toHaveBeenCalledWith('questionId1', 'userId1');
+        })
+    })
+
+    describe('updateQuestion', () => {
+        test('Should update existing question if user is an author', async () => {
+            const mockQuestion = {
+                _id: 'questionId1',
+                title: 'Question 1',
+                text: 'What the capital of France?',
+                author: 'userId1',
+                category: { _id: 'categoryId1', name: 'Geography' },
+                save: jest.fn().mockResolvedValue(),
+                populate: jest.fn().mockResolvedValue({
+                    _id: 'questionId1',
+                    title: 'Updated question',
+                    text: 'What is the capital of France?',
+                    author: 'userId1',
+                    category: { _id: 'categoryId1', name: 'Geography' },
+                }),
+            };
+
+            questionService.updateQuestion.mockResolvedValue(mockQuestion.populate())
+
+            const res = await request(app)
+                .put('/questions/questionId1')
+                .send({
+                    title: 'Updated question',
+                    text: 'What is the capital of France?'
+                })
+                .set('user', JSON.stringify({ id: 'userId1' }))
+
+            const { title, text } = res.body
+
+            expect(res.status).toBe(200)
+            expect(title).toEqual('Updated question')
+            expect(text).toEqual('What is the capital of France?')
+            expect(questionService.updateQuestion).toHaveBeenCalledWith(
+                'questionId1',
+                'userId1',
+                {
+                    title: 'Updated question',
+                    text: 'What is the capital of France?'
+                }
+            )
+        })
+
+        test('Should throw createForbiddenError when user is not the author', async () => {
+            // Mock request and response objects
+            const req = {
+                params: { id: 'questionId1' },
+                user: { id: 'userId1' },
+                body: { title: 'Updated question', text: 'What is the capital of France?' }
+            }
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            }
+
+            const forbiddenError = {
+                status: 403,
+                code: 'FORBIDDEN',
+                message: 'You do not have permission to perform this action.'
+            };
+
+            const mockUpdateQuestionService = jest.fn().mockRejectedValue(forbiddenError)
+
+            await updateQuestionHandler(req, res, mockUpdateQuestionService)
+            expect(res.status).toHaveBeenCalledWith(403)
+            expect(res.json).toHaveBeenCalledWith({
+                code: FORBIDDEN.code,
+                message: FORBIDDEN.message
+            })
+
+            expect(mockUpdateQuestionService).toHaveBeenCalledWith(
+                'questionId1',
+                'userId1',
+                {
+                    title: 'Updated question',
+                    text: 'What is the capital of France?'
+                }
+            )
         })
     })
 })
