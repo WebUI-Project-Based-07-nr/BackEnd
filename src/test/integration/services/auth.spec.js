@@ -1,14 +1,43 @@
-jest.mock('~/services/token')
-jest.mock('~/services/email')
-jest.mock('~/services/user')
-
 const authService = require('~/services/auth')
 const tokenService = require('~/services/token')
 const emailService = require('~/services/email')
 const userService = require('~/services/user')
+const dbHandler = require('~/test/dbHandler')
+
+const emailSubject = require('~/consts/emailSubject')
+const { tokenNames } = require('~/consts/auth')
+jest.mock('~/services/email')
+
+const createUser = async (userData) => {
+  return await userService.createUser(
+    userData.role,
+    userData.firstName,
+    userData.lastName,
+    userData.email,
+    userData.password,
+    userData.appLanguage,
+    userData.isEmailConfirmed
+  )
+}
+
+const createUserAndLogin = async (userData) => {
+  const user = await createUser(userData)
+
+  const tokens = await authService.login(userData.email, userData.password, false)
+  return { tokens, user }
+}
 
 describe('Authentication Service', () => {
+  beforeAll(async () => {
+    await dbHandler.connect()
+  })
+
+  afterAll(async () => {
+    await dbHandler.closeDatabase()
+  })
+
   afterEach(async () => {
+    await dbHandler.clearDatabase()
     jest.clearAllMocks()
   })
 
@@ -16,19 +45,13 @@ describe('Authentication Service', () => {
     role: 'student',
     firstName: 'Test',
     lastName: 'User',
-    email: 'testuser@example.com',
+    email: 'testus1er@example.com',
     password: 'password123',
     language: 'en',
     isEmailConfirmed: true
   }
 
   test('should signup a new user', async () => {
-    userService.createUser.mockResolvedValue({ _id: 'mocked_user_id', email: userData.email })
-    tokenService.saveToken.mockResolvedValue(null)
-    emailService.sendEmail.mockResolvedValue(null)
-
-    jest.spyOn(tokenService, 'generateConfirmToken').mockReturnValue('mocked_confirm_token')
-
     const result = await authService.signup(
       userData.role,
       userData.firstName,
@@ -38,105 +61,109 @@ describe('Authentication Service', () => {
       userData.language
     )
 
-    expect(result).toHaveProperty('userId', 'mocked_user_id')
-    expect(result).toHaveProperty('userEmail', userData.email)
+    const user = await userService.getUserByEmail(userData.email)
+    expect(user).not.toBeNull()
+    expect(user.email).toBe(result.userEmail)
 
-    expect(tokenService.saveToken).toHaveBeenCalledWith('mocked_user_id', expect.any(String), 'confirmToken')
-    expect(emailService.sendEmail).toHaveBeenCalledWith(
-      userData.email,
-      expect.any(String),
-      userData.language,
-      expect.any(Object)
-    )
+    const tokens = await tokenService.findTokensWithUsersByParams({ user: user._id })
+    expect(tokens).toHaveLength(1)
+    expect(tokens[0].confirmToken).toBeDefined()
   })
 
   test('should login a user', async () => {
-    const user = {
-      _id: 'mocked_user_id',
-      password: userData.password,
-      lastLoginAs: 'student',
-      isFirstLogin: true,
-      isEmailConfirmed: true
-    }
-    userService.getUserByEmail.mockResolvedValue(user)
-    tokenService.saveToken.mockResolvedValue(null)
-    tokenService.generateTokens.mockReturnValue({
-      accessToken: 'mocked_access_token',
-      refreshToken: 'mocked_refresh_token'
-    })
-    userService.privateUpdateUser.mockResolvedValue(null)
+    const user = await createUser(userData)
 
     const result = await authService.login(userData.email, userData.password, false)
 
-    expect(result).toHaveProperty('accessToken', 'mocked_access_token')
-    expect(result).toHaveProperty('refreshToken', 'mocked_refresh_token')
+    expect(result).toHaveProperty('accessToken')
+    expect(result).toHaveProperty('refreshToken')
 
-    expect(tokenService.saveToken).toHaveBeenCalledWith('mocked_user_id', 'mocked_refresh_token', 'refreshToken')
-    expect(userService.privateUpdateUser).toHaveBeenCalledWith('mocked_user_id', { isFirstLogin: false })
+    const tokens = await tokenService.findTokensWithUsersByParams({ user: user._id })
+    expect(tokens).toHaveLength(1)
+    expect(tokens[0].refreshToken).toBe(result.refreshToken)
+
+    const updatedUser = await userService.getUserById(user._id)
+    expect(updatedUser.isFirstLogin).toBe(false)
   })
 
   test('should logout a user', async () => {
-    tokenService.removeRefreshToken.mockResolvedValue(null)
+    const { tokens: {refreshToken} } = await createUserAndLogin(userData)
+    await authService.logout(refreshToken)
 
-    await authService.logout('mocked_refresh_token')
-
-    expect(tokenService.removeRefreshToken).toHaveBeenCalledWith('mocked_refresh_token')
+    const tokens = await tokenService.findTokensWithUsersByParams({ refreshToken })
+    expect(tokens).toHaveLength(0)
   })
 
   test('should refresh access token', async () => {
-    const user = { _id: 'mocked_user_id', lastLoginAs: 'student', isFirstLogin: false }
-    tokenService.validateRefreshToken.mockReturnValue({ id: 'mocked_user_id' })
-    tokenService.findToken.mockResolvedValue({ refreshToken: 'mocked_refresh_token' })
-    userService.getUserById.mockResolvedValue(user)
-    tokenService.generateTokens.mockReturnValue({
-      accessToken: 'mocked_access_token',
-      refreshToken: 'mocked_refresh_token'
-    })
-    tokenService.saveToken.mockResolvedValue(null)
+    const { user, tokens } = await createUserAndLogin(userData)
 
-    const result = await authService.refreshAccessToken('mocked_refresh_token')
+    const result = await authService.refreshAccessToken(tokens.refreshToken)
 
-    expect(result).toHaveProperty('accessToken', 'mocked_access_token')
-    expect(result).toHaveProperty('refreshToken', 'mocked_refresh_token')
+    expect(result).toHaveProperty('accessToken')
+    expect(result).toHaveProperty('refreshToken')
 
-    expect(tokenService.saveToken).toHaveBeenCalledWith('mocked_user_id', 'mocked_refresh_token', 'refreshToken')
+    const savedToken = await tokenService.findTokensWithUsersByParams({ refreshToken: result.refreshToken })
+
+    expect(savedToken).toHaveLength(1)
+    expect(savedToken[0].user._id.toString()).toBe(user._id.toString())
   })
 
   test('should send reset password email', async () => {
-    const user = { _id: 'mocked_user_id', firstName: userData.firstName, email: userData.email }
-    userService.getUserByEmail.mockResolvedValue(user)
-    tokenService.generateResetToken.mockReturnValue('mocked_reset_token')
-    tokenService.saveToken.mockResolvedValue(null)
-    emailService.sendEmail.mockResolvedValue(null)
+    emailService.sendEmail.mockResolvedValue()
+    const createdUser = await createUser(userData)
 
     await authService.sendResetPasswordEmail(userData.email, userData.language)
 
-    expect(tokenService.saveToken).toHaveBeenCalledWith('mocked_user_id', 'mocked_reset_token', 'resetToken')
+    const user = await userService.getUserByEmail(userData.email)
+
+    expect(user).not.toBeNull()
+    expect(user._id.toString()).toBe(createdUser._id.toString())
+
+    const savedToken = await tokenService.findTokensWithUsersByParams({ user: user._id })
+
+    expect(savedToken).not.toBeNull()
+    expect(savedToken[0]).toHaveProperty('resetToken')
+
     expect(emailService.sendEmail).toHaveBeenCalledWith(
       userData.email,
       expect.any(String),
       userData.language,
-      expect.any(Object)
+      expect.objectContaining({
+        resetToken: savedToken[0].resetToken,
+        email: userData.email,
+        firstName: userData.firstName
+      })
     )
   })
 
   test('should update password', async () => {
-    const tokenData = { id: 'mocked_user_id', firstName: userData.firstName, email: userData.email }
-    tokenService.validateResetToken.mockReturnValue(tokenData)
-    tokenService.findToken.mockResolvedValue({ resetToken: 'mocked_reset_token' })
-    userService.privateUpdateUser.mockResolvedValue(null)
-    tokenService.removeResetToken.mockResolvedValue(null)
-    emailService.sendEmail.mockResolvedValue(null)
+    emailService.sendEmail.mockResolvedValue()
+    const newPassword = 'new_password'
+    const createdUser = await createUser(userData)
 
-    await authService.updatePassword('mocked_reset_token', 'new_password', userData.language)
+    const resetToken = tokenService.generateResetToken({
+      id: createdUser._id,
+      firstName: userData.firstName,
+      email: userData.email
+    })
+    
+    await tokenService.saveToken(createdUser._id, resetToken, tokenNames.RESET_TOKEN)
+    await authService.updatePassword(resetToken, newPassword, userData.language)
 
-    expect(userService.privateUpdateUser).toHaveBeenCalledWith('mocked_user_id', { password: 'new_password' })
-    expect(tokenService.removeResetToken).toHaveBeenCalledWith('mocked_user_id')
+    const updatedUser = await userService.getUserByEmail(userData.email)
+    expect(updatedUser).not.toBeNull()
+    expect(updatedUser.password).toBe(newPassword)
+
+    const removedToken = await tokenService.findTokensWithUsersByParams({ user: updatedUser._id })
+    expect(removedToken[0].resetToken).toBeNull()
+
     expect(emailService.sendEmail).toHaveBeenCalledWith(
       userData.email,
-      expect.any(String),
+      emailSubject.SUCCESSFUL_PASSWORD_RESET,
       userData.language,
-      expect.any(Object)
+      expect.objectContaining({
+        firstName: userData.firstName
+      })
     )
   })
 })
