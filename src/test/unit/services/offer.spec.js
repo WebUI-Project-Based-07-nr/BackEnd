@@ -133,12 +133,16 @@ describe('offerService', () => {
   describe('deleteOffer', () => {
     it('should delete an existing offer', async () => {
       const id = mongoose.Types.ObjectId();
+      const execMock = jest.fn().mockResolvedValue({ _id: id });
 
-      Offer.findByIdAndRemove.mockResolvedValue({ _id: id });
+      Offer.findByIdAndRemove.mockReturnValue({
+        exec: execMock
+      });
 
       await offerService.deleteOffer(id);
 
       expect(Offer.findByIdAndRemove).toHaveBeenCalledWith(id);
+      expect(execMock).toHaveBeenCalled();
     });
   });
 

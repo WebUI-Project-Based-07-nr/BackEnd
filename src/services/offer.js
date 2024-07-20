@@ -63,7 +63,7 @@ const offerService = {
   },
 
   deleteOffer: async (id) => {
-    await Offer.findByIdAndRemove(id)
+    await Offer.findByIdAndRemove(id).exec()
   }
 }
 
