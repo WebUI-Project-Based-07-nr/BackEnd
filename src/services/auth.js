@@ -77,7 +77,7 @@ const authService = {
 
       return ticket.getPayload()
     } catch (err) {
-      return createError(401, 'BAD_ID_TOKEN')
+      throw createError(401, 'BAD_ID_TOKEN')
     }
   },
 
