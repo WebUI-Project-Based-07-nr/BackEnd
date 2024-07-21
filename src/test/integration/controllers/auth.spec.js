@@ -7,6 +7,9 @@ const errors = require('~/consts/errors')
 const tokenService = require('~/services/token')
 const Token = require('~/models/token')
 const { expectError } = require('~/test/helpers')
+const authService = require("~/services/auth");
+
+
 
 describe('Auth controller', () => {
   let app, server, signupResponse
@@ -94,6 +97,53 @@ describe('Auth controller', () => {
       const response = await app.post('/auth/forgot-password').send({ email: 'invalid@gmail.com' })
 
       expectError(404, errors.USER_NOT_FOUND, response)
+    })
+  })
+
+  describe('GoogleLogin endpoint', () => {
+    const idToken = 'id-token'
+    const tokens = {
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token'
+    }
+
+    beforeEach(() => {
+      authService.getGoogleTicket = jest.fn().mockResolvedValue({ email: user.email })
+    })
+
+    afterEach(() => jest.resetAllMocks())
+
+    it('should set tokens cookies and respond with accessToken', async () => {
+      authService.login = jest.fn().mockResolvedValue(tokens);
+
+      const response = await app
+          .post('/auth/google-auth')
+          .send({ token: { credential: idToken } })
+          .expect(200)
+
+      expect(response.headers['set-cookie']).toEqual(
+          expect.arrayContaining([
+            expect.stringContaining('ACCESS_TOKEN=access-token'),
+            expect.stringContaining('REFRESH_TOKEN=refresh-token')
+          ])
+      );
+    });
+
+    it('should throw ID_TOKEN_NOT_RETRIEVED with 400 status if token was not provided', async () => {
+      const response = await app
+          .post('/auth/google-auth')
+          .send({ token: { credential: undefined } })
+
+      expectError(400, errors.ID_TOKEN_NOT_RETRIEVED, response)
+    })
+
+    it('should throw BAD_ID_TOKEN with 401 status if token is expired or invalid', async () => {
+      authService.getGoogleTicket = 'dummy-ticket'
+      const response = await app
+          .post('/auth/google-auth')
+          .send({ token: { credential: idToken } })
+
+      expectError(401, errors.BAD_ID_TOKEN, response)
     })
   })
 
