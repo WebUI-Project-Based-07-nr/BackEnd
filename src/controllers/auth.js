@@ -47,7 +47,7 @@ const googleLogin = async (req, res) => {
   if (!idToken) throw createError(400, ID_TOKEN_NOT_RETRIEVED)
 
   try {
-    const payload = await authService.getGoogleTicket(idToken)
+    const payload = await authService.getPayloadFromGoogleTicket(idToken)
     const tokens = await authService.login(payload.email, null, true)
 
     res.cookie('ACCESS_TOKEN', tokens.accessToken, COOKIE_OPTIONS)

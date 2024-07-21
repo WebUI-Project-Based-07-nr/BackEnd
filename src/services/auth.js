@@ -66,7 +66,7 @@ const authService = {
     await tokenService.removeRefreshToken(refreshToken)
   },
 
-  getGoogleTicket: async (idToken) => {
+  getPayloadFromGoogleTicket: async (idToken) => {
     const auth2Client = new OAuth2Client(clientId)
 
     try {

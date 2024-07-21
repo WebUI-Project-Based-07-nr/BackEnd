@@ -108,7 +108,7 @@ describe('Auth controller', () => {
     }
 
     beforeEach(() => {
-      authService.getGoogleTicket = jest.fn().mockResolvedValue({ email: user.email })
+      authService.getPayloadFromGoogleTicket = jest.fn().mockResolvedValue({ email: user.email })
     })
 
     afterEach(() => jest.resetAllMocks())
@@ -138,7 +138,7 @@ describe('Auth controller', () => {
     })
 
     it('should throw BAD_ID_TOKEN with 401 status if token is expired or invalid', async () => {
-      authService.getGoogleTicket = 'dummy-ticket'
+      authService.getPayloadFromGoogleTicket = 'dummy-ticket'
       const response = await app
           .post('/auth/google-auth')
           .send({ token: { credential: idToken } })
