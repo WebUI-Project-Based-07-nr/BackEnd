@@ -10,6 +10,10 @@ const {
   USER_NOT_FOUND
 } = require('~/consts/errors')
 const emailSubject = require('~/consts/emailSubject')
+const { OAuth2Client } = require('google-auth-library')
+const {
+  gmailCredentials: { clientId }
+} = require('~/configs/config')
 const {
   tokenNames: { REFRESH_TOKEN, RESET_TOKEN, CONFIRM_TOKEN }
 } = require('~/consts/auth')
@@ -60,6 +64,21 @@ const authService = {
 
   logout: async (refreshToken) => {
     await tokenService.removeRefreshToken(refreshToken)
+  },
+
+  getGoogleTicket: async (idToken) => {
+    const auth2Client = new OAuth2Client(clientId)
+
+    try {
+      const ticket = await auth2Client.verifyIdToken({
+        idToken,
+        audience: clientId
+      })
+
+      return ticket.getPayload()
+    } catch (err) {
+      return createError(401, 'BAD_ID_TOKEN')
+    }
   },
 
   refreshAccessToken: async (refreshToken) => {
