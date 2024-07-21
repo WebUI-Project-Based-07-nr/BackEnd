@@ -63,6 +63,8 @@ router.post(
  */
 router.post('/login', validationMiddleware(loginValidationSchema), asyncWrapper(authController.login))
 
+router.post('/google-auth', asyncWrapper(authController.googleLogin))
+
 /**
  * @swagger
  * /auth/logout:
