@@ -50,6 +50,9 @@ const googleLogin = async (req, res) => {
     const payload = await authService.getGoogleTicket(idToken)
     const tokens = await authService.login(payload.email, null, true)
 
+    res.cookie('ACCESS_TOKEN', tokens.accessToken, COOKIE_OPTIONS)
+    res.cookie('REFRESH_TOKEN', tokens.refreshToken, COOKIE_OPTIONS)
+
     delete tokens.refreshToken
 
     res.status(200).json(tokens)
