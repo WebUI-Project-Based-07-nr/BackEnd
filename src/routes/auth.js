@@ -63,6 +63,45 @@ router.post(
  */
 router.post('/login', validationMiddleware(loginValidationSchema), asyncWrapper(authController.login))
 
+/**
+ * @swagger
+ * /auth/google-auth:
+ *   post:
+ *     summary: User login with Google
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: object
+ *                 properties:
+ *                   credential:
+ *                     type: string
+ *                     description: The ID token received from Google
+ *                     example: "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij..."
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   description: Access token
+ *                 expiresIn:
+ *                   type: number
+ *                   description: Access token expiration time in seconds
+ *       400:
+ *         description: ID token not retrieved
+ *       401:
+ *         description: Bad ID token
+ */
 router.post('/google-auth', asyncWrapper(authController.googleLogin))
 
 /**
