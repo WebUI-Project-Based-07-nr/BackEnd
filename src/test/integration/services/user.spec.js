@@ -1,9 +1,15 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
 const User = require('~/models/user')
 const userService = require('~/services/user')
 const dbHandler = require('~/test/dbHandler')
 const { comparePasswords } = require('~/utils/users/passwordEncryption')
+
+jest.mock('bcrypt', () => ({
+  hash: jest.fn().mockResolvedValue('hashed_password'),
+  compare: jest.fn().mockResolvedValue(true)
+}))
 
 const createUser = async (userData) => {
   return await userService.createUser(
@@ -50,6 +56,7 @@ describe('User service', () => {
     const createdUser = await User.findOne({ email: userData.email }).select('+password').exec()
     const isPasswordHashed = await comparePasswords(userData.password, createdUser.password)
 
+    expect(bcrypt.hash).toHaveBeenCalledWith(userData.password, 10)
     expect(isPasswordHashed).toBeTruthy()
     expect(createdUser.password).not.toBe(userData.password)
   })
