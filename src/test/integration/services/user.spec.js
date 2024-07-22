@@ -3,9 +3,7 @@ const mongoose = require('mongoose')
 const User = require('~/models/user')
 const userService = require('~/services/user')
 const dbHandler = require('~/test/dbHandler')
-
-const { DOCUMENT_NOT_FOUND } = require('~/consts/errors')
-const { createError } = require('~/utils/errorsHelper')
+const { comparePasswords } = require('~/utils/users/passwordEncryption')
 
 const createUser = async (userData) => {
   return await userService.createUser(
@@ -44,6 +42,16 @@ describe('User service', () => {
     expect(count).toBe(1)
     expect(items).toHaveLength(1)
     expect(items[0].email).toBe(userData.email)
+  })
+
+  test('should create and fetch users with encrypted password', async () => {
+    await createUser(userData)
+
+    const createdUser = await User.findOne({ email: userData.email }).select('+password').exec()
+    const isPasswordHashed = await comparePasswords(userData.password, createdUser.password)
+
+    expect(isPasswordHashed).toBeTruthy()
+    expect(createdUser.password).not.toBe(userData.password)
   })
 
   test('should fetch user by ID', async () => {
@@ -147,6 +155,7 @@ describe('User service', () => {
     const deletedUser = await userService.getUserById(createdUser._id)
     expect(deletedUser).toBeNull()
   })
+
   test('should throw error for duplicate email during user creation', async () => {
     await createUser(userData)
 
