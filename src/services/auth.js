@@ -3,6 +3,10 @@ const emailService = require('~/services/email')
 const { getUserByEmail, createUser, privateUpdateUser, getUserById } = require('~/services/user')
 const { createError } = require('~/utils/errorsHelper')
 const {
+  encryptPassword,
+  comparePasswords
+} = require('~/utils/users/passwordEncryption')
+const {
   EMAIL_NOT_CONFIRMED,
   INCORRECT_CREDENTIALS,
   BAD_RESET_TOKEN,
@@ -34,7 +38,7 @@ const authService = {
       throw createError(401, USER_NOT_FOUND)
     }
 
-    const checkedPassword = (password === user.password) || isFromGoogle
+    const checkedPassword = await comparePasswords(password, user.password) || isFromGoogle
 
     if (!checkedPassword) {
       throw createError(401, INCORRECT_CREDENTIALS)
@@ -102,7 +106,7 @@ const authService = {
     }
 
     const { id: userId, firstName, email } = tokenData
-    await privateUpdateUser(userId, { password })
+    await privateUpdateUser(userId, { password: await encryptPassword(password) })
 
     await tokenService.removeResetToken(userId)
 
