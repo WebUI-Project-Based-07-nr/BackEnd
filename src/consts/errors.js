@@ -75,6 +75,10 @@ const errors = {
     code: 'BAD_RESET_TOKEN',
     message: 'The reset token is either invalid or has expired.'
   },
+  BAD_ACCESS_TOKEN: {
+    code: 'BAD_ACCESS_TOKEN',
+    message: 'The access token is either invalid or has expired.'
+  },
   INVALID_TOKEN_NAME: {
     code: 'INVALID_TOKEN_NAME',
     message: 'The token name you used is invalid.'
