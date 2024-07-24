@@ -12,8 +12,6 @@ const confirmEmail = async (confirmToken) => {
 
     user.isEmailConfirmed = true
     await user.save()
-
-    return user
 }
 
 module.exports = {
