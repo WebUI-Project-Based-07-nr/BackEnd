@@ -5,10 +5,10 @@ const confirmEmailController = require('~/controllers/confirmEmail')
 
 /**
  * @swagger
- * /auth/confirm-email:
+ * /confirm-email:
  *   get:
  *     summary: Confirm user email
- *     tags: [Auth]
+ *     tags: [Email Confirmation]
  *     parameters:
  *       - in: query
  *         name: confirmToken
@@ -22,6 +22,6 @@ const confirmEmailController = require('~/controllers/confirmEmail')
  *       400:
  *         description: Invalid or expired token
  */
-router.get('/auth/confirm-email', asyncWrapper(confirmEmailController.confirmEmail))
+router.get('/', asyncWrapper(confirmEmailController.confirmEmail))
 
 module.exports = router
