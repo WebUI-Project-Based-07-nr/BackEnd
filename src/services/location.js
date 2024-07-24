@@ -1,5 +1,5 @@
 const { thirdPartyAPIs: { COUNTRY_CITY_STATE_API_KEY } } = require('~/configs/config')
-const { endpoints: { BASE_URL } } = require('~/consts/location');
+const { endpoints: { BASE_URL } } = require('~/consts/location')
 const { createError } = require('~/utils/errorsHelper')
 const { errors } = require('~/consts/errors')
 
