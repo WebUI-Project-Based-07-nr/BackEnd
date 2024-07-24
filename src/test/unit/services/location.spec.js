@@ -40,4 +40,15 @@ describe('Location service', () => {
 
         await expect(locationService.fetchCountries()).rejects.toEqual(error500)
     })
+
+    test('Should re-throw error with code and message', async () => {
+        const mockError = { code: 'ERROR', message: 'Some error' }
+        fetch.mockRejectedValue(mockError)
+
+        try {
+            await locationService.fetchCountries()
+        } catch (error) {
+            expect(error).toEqual(mockError)
+        }
+    })
 })
