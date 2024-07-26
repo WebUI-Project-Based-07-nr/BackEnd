@@ -42,6 +42,17 @@ describe('Location controller', () => {
         expect(response.body).toEqual(error400)
     })
 
+    test('Should handle 404 error', async () => {
+        const error404 = { ...errors.NOT_FOUND }
+
+        locationService.fetchCountries.mockRejectedValue(error404)
+
+        const response = await app.get('/countries')
+
+        expect(response.status).toBe(404)
+        expect(response.body).toEqual(error404)
+    })
+
     test('Should handle 500 error', async () => {
         const error500 = { ...errors.INTERNAL_SERVER_ERROR }
 
