@@ -5,7 +5,15 @@ const getCountries = async (req, res) => {
         const countries = await locationService.fetchCountries()
         res.json(countries)
     } catch (error) {
-        res.status(error.code === 'INTERNAL_SERVER_ERROR' ? 500 : 400).json({
+        let statusCode = 500
+
+        if (error.code === 'NOT_FOUND') {
+            statusCode = 404
+        } else if (error.code === 'BAD_REQUEST') {
+            statusCode = 400
+        }
+
+        res.status(statusCode).json({
             code: error.code,
             message: error.message,
         })
