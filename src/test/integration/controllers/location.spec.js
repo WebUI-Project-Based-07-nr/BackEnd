@@ -25,7 +25,7 @@ describe('Location controller', () => {
         locationService.fetchCountries.mockResolvedValue(mockData)
 
         const response = await app
-            .get('/countries')
+            .get('/location/countries')
 
         expect(response.status).toBe(200)
         expect(response.body).toEqual(mockData)
@@ -36,7 +36,7 @@ describe('Location controller', () => {
 
         locationService.fetchCountries.mockRejectedValue(error400)
 
-        const response = await app.get('/countries')
+        const response = await app.get('/location/countries')
 
         expect(response.status).toBe(400)
         expect(response.body).toEqual(error400)
@@ -47,7 +47,7 @@ describe('Location controller', () => {
 
         locationService.fetchCountries.mockRejectedValue(error404)
 
-        const response = await app.get('/countries')
+        const response = await app.get('/location/countries')
 
         expect(response.status).toBe(404)
         expect(response.body).toEqual(error404)
@@ -58,7 +58,7 @@ describe('Location controller', () => {
 
         locationService.fetchCountries.mockRejectedValue(error500)
 
-        const response = await app.get('/countries')
+        const response = await app.get('/location/countries')
 
         expect(response.status).toBe(500)
         expect(response.body).toEqual(error500)
