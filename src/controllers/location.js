@@ -1,4 +1,5 @@
 const locationService = require('~/services/location')
+const errors = require('~/consts/errors')
 
 const getCountries = async (req, res) => {
     try {
@@ -7,15 +8,17 @@ const getCountries = async (req, res) => {
     } catch (error) {
         let statusCode = 500
 
-        if (error.code === 'NOT_FOUND') {
+        if (error.code === errors.NOT_FOUND.code) {
             statusCode = 404
-        } else if (error.code === 'BAD_REQUEST') {
+        } else if (error.code === errors.BAD_REQUEST.code) {
             statusCode = 400
+        } else if (error.code === errors.INTERNAL_SERVER_ERROR.code) {
+            statusCode = 500
         }
 
         res.status(statusCode).json({
             code: error.code,
-            message: error.message,
+            message: error.message
         })
     }
 }
