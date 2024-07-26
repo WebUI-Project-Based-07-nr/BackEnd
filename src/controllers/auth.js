@@ -6,6 +6,11 @@ const {
 const {
   tokenNames: { REFRESH_TOKEN, ACCESS_TOKEN }
 } = require('~/consts/auth')
+const { createError } = require("~/utils/errorsHelper");
+const {
+  BAD_ID_TOKEN,
+  ID_TOKEN_NOT_RETRIEVED
+} = require('~/consts/errors')
 
 const COOKIE_OPTIONS = {
   maxAge: oneDayInMs,
@@ -35,6 +40,25 @@ const login = async (req, res) => {
   delete tokens.refreshToken
 
   res.status(200).json(tokens)
+}
+
+const googleLogin = async (req, res) => {
+  const idToken = req.body.token?.credential
+  if (!idToken) throw createError(400, ID_TOKEN_NOT_RETRIEVED)
+
+  try {
+    const payload = await authService.getPayloadFromGoogleTicket(idToken)
+    const tokens = await authService.login(payload.email, null, true)
+
+    res.cookie('ACCESS_TOKEN', tokens.accessToken, COOKIE_OPTIONS)
+    res.cookie('REFRESH_TOKEN', tokens.refreshToken, COOKIE_OPTIONS)
+
+    delete tokens.refreshToken
+
+    res.status(200).json(tokens)
+  } catch (err) {
+    throw createError(401, BAD_ID_TOKEN)
+  }
 }
 
 const logout = async (req, res) => {
@@ -92,5 +116,6 @@ module.exports = {
   logout,
   refreshAccessToken,
   sendResetPasswordEmail,
-  updatePassword
+  updatePassword,
+  googleLogin
 }

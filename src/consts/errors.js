@@ -75,6 +75,10 @@ const errors = {
     code: 'BAD_RESET_TOKEN',
     message: 'The reset token is either invalid or has expired.'
   },
+  BAD_ID_TOKEN: {
+    code: 'BAD_ID_TOKEN',
+    message: 'ID token is either invalid or has expired.'
+  },
   INVALID_TOKEN_NAME: {
     code: 'INVALID_TOKEN_NAME',
     message: 'The token name you used is invalid.'
@@ -82,6 +86,10 @@ const errors = {
   INVALID_ID: {
     code: 'INVALID_ID',
     message: 'ID is invalid.'
+  },
+  ID_TOKEN_NOT_RETRIEVED: {
+    code: 'ID_TOKEN_NOT_RETRIEVED',
+    message: 'Could not retrieve ID token.'
   },
   API_TOKEN_NOT_RETRIEVED: {
     code: 'API_TOKEN_NOT_RETRIEVED',
