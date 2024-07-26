@@ -1,7 +1,7 @@
 const locationService = require('~/services/location')
 const errors = require('~/consts/errors')
 
-const getCountries = async (req, res) => {
+const getCountries = async (_req, res) => {
     try {
         const countries = await locationService.fetchCountries()
         res.json(countries)
@@ -12,8 +12,6 @@ const getCountries = async (req, res) => {
             statusCode = 404
         } else if (error.code === errors.BAD_REQUEST.code) {
             statusCode = 400
-        } else if (error.code === errors.INTERNAL_SERVER_ERROR.code) {
-            statusCode = 500
         }
 
         res.status(statusCode).json({

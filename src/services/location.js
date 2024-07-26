@@ -21,7 +21,9 @@ const fetchCountries = async () => {
 
         return await response.json()
     } catch (error) {
-        if (error.code && error.message) throw error
+        if (error.code && error.message) {
+            throw error
+        }
 
         throw createError(500, error.INTERNAL_SERVER_ERROR)
     }
