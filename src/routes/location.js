@@ -14,6 +14,8 @@ const locationController = require('~/controllers/location')
  *         description: List of countries retrieved successfully
  *       400:
  *         description: Invalid request
+ *       404:
+ *         description: Not found
  *       500:
  *         description: Server error
  */
