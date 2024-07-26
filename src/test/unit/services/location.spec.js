@@ -29,6 +29,18 @@ describe('Location service', () => {
         await expect(locationService.fetchCountries()).rejects.toEqual(error400)
     })
 
+    test('Should handle 404 error', async () => {
+        const error404 = createError(404, errors.NOT_FOUND)
+        createError.mockReturnValue(error404)
+
+        fetch.mockResolvedValue({
+            ok: false,
+            status: 404
+        })
+
+        await expect(locationService.fetchCountries).rejects.toEqual(error404)
+    })
+
     test('Should handle 500 error', async () => {
         const error500 = createError(500, errors.INTERNAL_SERVER_ERROR)
         createError.mockReturnValue(error500)
