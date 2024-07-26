@@ -11,6 +11,10 @@ const fetchCountries = async () => {
             }
         })
 
+        if (response.status === 404) {
+            throw createError(404, errors.NOT_FOUND)
+        }
+
         if (!response.ok) {
             throw createError(400, errors.BAD_REQUEST)
         }
