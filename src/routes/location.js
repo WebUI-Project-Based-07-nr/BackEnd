@@ -5,7 +5,7 @@ const locationController = require('~/controllers/location')
 
 /**
  * @swagger
- * /countries:
+ * /location/countries:
  *   get:
  *     summary: Get list of countries
  *     tags: [Location]
@@ -17,6 +17,6 @@ const locationController = require('~/controllers/location')
  *       500:
  *         description: Server error
  */
-router.get('/', asyncWrapper(locationController.getCountries))
+router.get('/countries', asyncWrapper(locationController.getCountries))
 
 module.exports = router

@@ -16,6 +16,6 @@ router.use('/admin-invitations', adminInvitation)
 router.use('/questions', question)
 router.use('/resources-categories', resourcesCategory)
 router.use('/offers', offer)
-router.use('/countries', location)
+router.use('/location', location)
 
 module.exports = router
