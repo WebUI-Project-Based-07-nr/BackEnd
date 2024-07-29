@@ -9,7 +9,7 @@ const confirmEmail = async confirmToken => {
         throw createError(400, BAD_CONFIRM_TOKEN)
     }
 
-    const user = await User.findById(decoded.id)
+    const user = await User.findById(decoded.id).select('+isEmailConfirmed')
     if (!user || user.isEmailConfirmed) {
         throw createError(400, BAD_CONFIRM_TOKEN)
     }
