@@ -5,6 +5,12 @@ const { createError } = require('~/utils/errorsHelper');
 global.fetch = jest.fn()
 jest.mock('~/utils/errorsHelper')
 
+const expectRejected = async (error) => {
+    expect(locationService.fetchCountries())
+        .rejects
+        .toEqual(error)
+}
+
 describe('Location service', () => {
     test('Should fetch countries', async () => {
         const mockData = [{ iso2: 'US', name: 'United States' }]
@@ -26,7 +32,7 @@ describe('Location service', () => {
             status: 400,
         })
 
-        await expect(locationService.fetchCountries()).rejects.toEqual(error400)
+        await expectRejected(error400)
     })
 
     test('Should handle 404 error', async () => {
@@ -38,7 +44,7 @@ describe('Location service', () => {
             status: 404
         })
 
-        await expect(locationService.fetchCountries).rejects.toEqual(error404)
+        await expectRejected(error404)
     })
 
     test('Should handle 500 error', async () => {
@@ -50,17 +56,13 @@ describe('Location service', () => {
             status: 500,
         })
 
-        await expect(locationService.fetchCountries()).rejects.toEqual(error500)
+        await expectRejected(error500)
     })
 
     test('Should re-throw error with code and message', async () => {
         const mockError = { code: 'ERROR', message: 'Some error' }
         fetch.mockRejectedValue(mockError)
 
-        try {
-            await locationService.fetchCountries()
-        } catch (error) {
-            expect(error).toEqual(mockError)
-        }
+        await expectRejected(mockError)
     })
 })
