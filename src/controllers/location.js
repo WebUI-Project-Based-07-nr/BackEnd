@@ -1,5 +1,7 @@
 const locationService = require('~/services/location')
-const handleError = require('~/utils/location/location')
+const { handleError } = require('~/utils/location/location')
+const { createError } = require('~/utils/errorsHelper');
+const errors = require('~/consts/errors')
 
 const getCountries = async (_req, res) => {
     try {
@@ -12,6 +14,11 @@ const getCountries = async (_req, res) => {
 
 const getCities = async (req, res) => {
     const countryCode = req.query.countryCode
+
+    if (!countryCode) {
+        const error = createError(400, errors.BAD_REQUEST)
+        return handleError(res, error)
+    }
 
     try {
         const cities = await locationService.fetchCities(countryCode)
