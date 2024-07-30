@@ -5,7 +5,7 @@ const {
 const { fetchData } = require('~/utils/location/location')
 
 const locationService = {
-    fetchCountries: async () => {
+    fetchCountries: () => {
         const url = BASE_URL
         const options = {
             headers: {
