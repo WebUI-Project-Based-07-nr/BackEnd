@@ -1,5 +1,5 @@
 const { createError } = require('~/utils/errorsHelper')
-const { errors } = require('~/consts/errors')
+const errors = require('~/consts/errors')
 
 const fetchData = async (url, options) => {
     try {
@@ -19,7 +19,7 @@ const fetchData = async (url, options) => {
             throw error
         }
 
-        throw createError(500, error.INTERNAL_SERVER_ERROR)
+        throw createError(500, errors.INTERNAL_SERVER_ERROR)
     }
 }
 
@@ -37,6 +37,7 @@ const handleError = (res, error) => {
         message: error.message
     })
 }
+
 
 module.exports = {
     fetchData,
