@@ -78,6 +78,7 @@ const errors = {
   BAD_CONFIRM_TOKEN: {
     code: 'BAD_CONFIRM_TOKEN',
     message: 'The confirm token is either invalid or has expired.'
+  },
   BAD_ID_TOKEN: {
     code: 'BAD_ID_TOKEN',
     message: 'ID token is either invalid or has expired.'
