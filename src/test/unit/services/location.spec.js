@@ -1,12 +1,12 @@
-const locationService = require('~/services/location');
+const locationService = require('~/services/location')
 const errors = require('~/consts/errors')
-const { createError } = require('~/utils/errorsHelper');
+const { createError } = require('~/utils/errorsHelper')
 
 global.fetch = jest.fn()
 jest.mock('~/utils/errorsHelper')
 
 const expectRejected = async (error) => {
-    expect(locationService.fetchCountries())
+    await expect(locationService.fetchCountries())
         .rejects
         .toEqual(error)
 }
@@ -30,12 +30,12 @@ describe('Location service', () => {
             json: async () => mockData
         })
 
-        const cities = await locationService.fetchCities()
+        const cities = await locationService.fetchCities('UA')
         expect(cities).toEqual(mockData)
     })
 
     test('Should handle 400 error', async () => {
-        const error400 = createError(400, errors.BAD_REQUEST)
+        const error400 = { status: 400, message: errors.BAD_REQUEST.message  }
         createError.mockReturnValue(error400)
 
         fetch.mockResolvedValue({
@@ -47,7 +47,7 @@ describe('Location service', () => {
     })
 
     test('Should handle 404 error', async () => {
-        const error404 = createError(404, errors.NOT_FOUND)
+        const error404 = { status: 404, message: errors.NOT_FOUND.message }
         createError.mockReturnValue(error404)
 
         fetch.mockResolvedValue({
@@ -59,7 +59,7 @@ describe('Location service', () => {
     })
 
     test('Should handle 500 error', async () => {
-        const error500 = createError(500, errors.INTERNAL_SERVER_ERROR)
+        const error500 = { ...errors.INTERNAL_SERVER_ERROR }
         createError.mockReturnValue(error500)
 
         fetch.mockResolvedValue({
