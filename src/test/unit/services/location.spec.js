@@ -23,6 +23,17 @@ describe('Location service', () => {
         expect(countries).toEqual(mockData)
     })
 
+    test('Should fetch cities', async () => {
+        const mockData = [{ id: 1 , name: 'Kyiv' }]
+        fetch.mockResolvedValue({
+            ok: true,
+            json: async () => mockData
+        })
+
+        const cities = await locationService.fetchCities()
+        expect(cities).toEqual(mockData)
+    })
+
     test('Should handle 400 error', async () => {
         const error400 = createError(400, errors.BAD_REQUEST)
         createError.mockReturnValue(error400)
