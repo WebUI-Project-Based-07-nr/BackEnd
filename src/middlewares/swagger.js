@@ -35,6 +35,8 @@ const DeleteUserByIdScheme = require('~/docs/schemas/users/delete-user-by-id')
 const GetUsersScheme = require('~/docs/schemas/users/get-users')
 const UpdateUserByIdScheme = require('~/docs/schemas/users/update-user-by-id')
 
+const CategoryScheme = require('~/docs/schemas/category/category')
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -70,7 +72,8 @@ const options = {
         ...ChangeUserStatusScheme,
         ...DeleteUserByIdScheme,
         ...GetUsersScheme,
-        ...UpdateUserByIdScheme
+        ...UpdateUserByIdScheme,
+        ...CategoryScheme
       }
     }
   },
