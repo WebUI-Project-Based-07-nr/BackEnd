@@ -36,6 +36,7 @@ const GetUsersScheme = require('~/docs/schemas/users/get-users')
 const UpdateUserByIdScheme = require('~/docs/schemas/users/update-user-by-id')
 
 const CategoryScheme = require('~/docs/schemas/category/category')
+const CreateCategoryScheme = require('~/docs/schemas/category/create-category')
 
 const options = {
   definition: {
@@ -73,7 +74,8 @@ const options = {
         ...DeleteUserByIdScheme,
         ...GetUsersScheme,
         ...UpdateUserByIdScheme,
-        ...CategoryScheme
+        ...CategoryScheme,
+        ...CreateCategoryScheme
       }
     }
   },
