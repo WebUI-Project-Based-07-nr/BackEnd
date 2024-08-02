@@ -37,6 +37,8 @@ const UpdateUserByIdScheme = require('~/docs/schemas/users/update-user-by-id')
 
 const CategoryScheme = require('~/docs/schemas/category/category')
 
+const SubjectScheme = require('~/docs/schemas/subject/subject')
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -73,7 +75,8 @@ const options = {
         ...DeleteUserByIdScheme,
         ...GetUsersScheme,
         ...UpdateUserByIdScheme,
-        ...CategoryScheme
+        ...CategoryScheme,
+        ...SubjectScheme
       }
     }
   },
