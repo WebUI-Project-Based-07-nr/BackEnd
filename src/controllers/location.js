@@ -1,4 +1,6 @@
 const locationService = require('~/services/location')
+const { handleError } = require('~/utils/location/location')
+const { createError } = require('~/utils/errorsHelper');
 const errors = require('~/consts/errors')
 
 const getCountries = async (_req, res) => {
@@ -6,19 +8,27 @@ const getCountries = async (_req, res) => {
         const countries = await locationService.fetchCountries()
         res.json(countries)
     } catch (error) {
-        let statusCode = 500
-
-        if (error.code === errors.NOT_FOUND.code) {
-            statusCode = 404
-        } else if (error.code === errors.BAD_REQUEST.code) {
-            statusCode = 400
-        }
-
-        res.status(statusCode).json({
-            code: error.code,
-            message: error.message
-        })
+        handleError(res, error)
     }
 }
 
-module.exports = { getCountries }
+const getCities = async (req, res) => {
+    const countryCode = req.query.countryCode
+
+    if (!countryCode) {
+        const error = createError(400, errors.BAD_REQUEST)
+        return handleError(res, error)
+    }
+
+    try {
+        const cities = await locationService.fetchCities(countryCode)
+        res.json(cities)
+    } catch (error) {
+        handleError(res, error)
+    }
+}
+
+module.exports = {
+    getCountries,
+    getCities
+}
