@@ -39,6 +39,9 @@ const CategoryScheme = require('~/docs/schemas/category/category')
 
 const LessonScheme = require('~/docs/schemas/lesson/lesson')
 
+const SubjectScheme = require('~/docs/schemas/subject/subject')
+
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -77,6 +80,7 @@ const options = {
         ...UpdateUserByIdScheme,
         ...CategoryScheme,
         ...LessonScheme
+        ...SubjectScheme
       }
     }
   },
