@@ -37,7 +37,10 @@ const UpdateUserByIdScheme = require('~/docs/schemas/users/update-user-by-id')
 
 const CategoryScheme = require('~/docs/schemas/category/category')
 
+const LessonScheme = require('~/docs/schemas/lesson/lesson')
+
 const SubjectScheme = require('~/docs/schemas/subject/subject')
+
 
 const options = {
   definition: {
@@ -76,6 +79,7 @@ const options = {
         ...GetUsersScheme,
         ...UpdateUserByIdScheme,
         ...CategoryScheme,
+        ...LessonScheme
         ...SubjectScheme
       }
     }
