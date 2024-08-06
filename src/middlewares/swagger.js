@@ -38,6 +38,11 @@ const UpdateUserByIdScheme = require('~/docs/schemas/users/update-user-by-id')
 const CategoryScheme = require('~/docs/schemas/category/category')
 const CreateCategoryScheme = require('~/docs/schemas/category/create-category')
 
+const LessonScheme = require('~/docs/schemas/lesson/lesson')
+
+const SubjectScheme = require('~/docs/schemas/subject/subject')
+
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -75,7 +80,9 @@ const options = {
         ...GetUsersScheme,
         ...UpdateUserByIdScheme,
         ...CategoryScheme,
-        ...CreateCategoryScheme
+        ...CreateCategoryScheme,
+        ...LessonScheme,
+        ...SubjectScheme
       }
     }
   },
