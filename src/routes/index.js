@@ -9,6 +9,7 @@ const resourcesCategory = require('~/routes/resourcesCategory')
 const offer = require('~/routes/offer')
 const confirmEmail = require(`~/routes/confirmEmail`)
 const location = require('~/routes/location')
+const category = require('~/routes/category')
 
 router.use('/auth', auth)
 router.use('/users', user)
@@ -19,5 +20,6 @@ router.use('/resources-categories', resourcesCategory)
 router.use('/offers', offer)
 router.use('/confirm-email', confirmEmail)
 router.use('/location', location)
+router.use('/categories', category)
 
 module.exports = router
