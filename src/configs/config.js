@@ -39,10 +39,15 @@ const thirdPartyAPIs = {
   COUNTRY_CITY_STATE_API_KEY: process.env.COUNTRY_CITY_STATE_API_KEY
 }
 
+const firebase = {
+  BUCKET_URL_FIREBASE: process.env.BUCKET_URL_FIREBASE
+}
+
 module.exports = {
   config,
   gmailCredentials,
   superAdmin,
   azureAccess,
-  thirdPartyAPIs
+  thirdPartyAPIs,
+  firebase
 }
