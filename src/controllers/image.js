@@ -16,8 +16,8 @@ const uploadImage = async (req, res) => {
     await User.findByIdAndUpdate(userId, { photo: `images/${userId}` })
 
     res.status(200).send({ message: 'File uploaded successfully' })
-  } catch (e) {
-    res.status(500).send({ error: e.message });
+  } catch (error) {
+    res.status(500).send({ error: error.message });
   }
 }
 
