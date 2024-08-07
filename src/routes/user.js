@@ -7,7 +7,6 @@ const isEntityValid = require('~/middlewares/entityValidation')
 const upload = require('~/middlewares/multer')
 
 const userController = require('~/controllers/user')
-const imageController = require('~/controllers/image')
 const User = require('~/models/user')
 const {
   roles: { ADMIN }
@@ -18,43 +17,6 @@ const params = [{ model: User, idName: 'id' }]
 router.use(authMiddleware)
 
 router.param('id', idValidation)
-
-/**
- * @swagger
- * /users/image:
- *   post:
- *     summary: Upload a user image
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               file:
- *                 type: string
- *                 format: binary
- *                 description: The image file to upload.
- *     responses:
- *       200:
- *         description: Image uploaded successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 downloadUrl:
- *                   type: string
- *                   description: URL to the uploaded image.
- *       400:
- *         description: Bad request, possibly due to invalid file type or size
- *       401:
- *         description: Unauthorized access
- *       500:
- *         description: Server error
- */
-router.post('/image', authMiddleware, upload.single('file'), asyncWrapper(imageController.uploadImage))
 
 /**
  * @swagger
@@ -199,5 +161,34 @@ router.patch('/:id/change-status', isEntityValid({ params }), asyncWrapper(userC
  *         description: Server error
  */
 router.delete('/:id', isEntityValid({ params }), asyncWrapper(userController.deleteUser))
+
+/**
+ * @swagger
+ * /users/image:
+ *   post:
+ *     summary: Upload a user image
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The image file to upload.
+ *     responses:
+ *       204:
+ *         description: The image was uploaded successfully.
+ *       400:
+ *         description: Bad request, possibly due to invalid file type or size
+ *       401:
+ *         description: Unauthorized access
+ *       500:
+ *         description: Server error
+ */
+router.post('/image', authMiddleware, upload.single('file'), asyncWrapper(userController.uploadImage))
 
 module.exports = router
