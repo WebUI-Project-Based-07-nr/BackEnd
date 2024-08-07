@@ -4,8 +4,10 @@ const idValidation = require('~/middlewares/idValidation')
 const asyncWrapper = require('~/middlewares/asyncWrapper')
 const { restrictTo, authMiddleware } = require('~/middlewares/auth')
 const isEntityValid = require('~/middlewares/entityValidation')
+const upload = require('~/middlewares/multer')
 
 const userController = require('~/controllers/user')
+const imageController = require('~/controllers/image')
 const User = require('~/models/user')
 const {
   roles: { ADMIN }
@@ -16,6 +18,9 @@ const params = [{ model: User, idName: 'id' }]
 router.use(authMiddleware)
 
 router.param('id', idValidation)
+
+
+router.post('/image', authMiddleware, upload.single('file'), asyncWrapper(imageController.uploadImage))
 
 /**
  * @swagger
