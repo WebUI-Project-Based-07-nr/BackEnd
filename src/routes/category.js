@@ -89,6 +89,38 @@ router.param('id', idValidation)
  */
 router.get('/', asyncWrapper(categoryController.getCategories))
 
+/**
+ * @swagger
+ * /categories/{id}/subjects/names:
+ *   get:
+ *     summary: Retrieve the names of subjects associated with a specific category
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *           format: ObjectId
+ *         required: true
+ *         description: The ID of the category
+ *     responses:
+ *       200:
+ *         description: A list of subject names associated with the specified category
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *                 description: The name of a subject
+ *                 example: 'AI'
+ *       400:
+ *         description: Invalid ID supplied
+ *       404:
+ *         description: Category not found
+ *       401:
+ *         description: Unauthorized user
+ */
 router.get('/:id/subjects/names', isEntityValid({ params }), asyncWrapper(categoryController.getSubjectNamesById))
 
 /** @swagger
