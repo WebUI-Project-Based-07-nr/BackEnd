@@ -20,6 +20,6 @@ router.use('/resources-categories', resourcesCategory)
 router.use('/offers', offer)
 router.use('/confirm-email', confirmEmail)
 router.use('/location', location)
-router.use('/category', category)
+router.use('/categories', category)
 
 module.exports = router

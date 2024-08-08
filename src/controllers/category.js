@@ -1,6 +1,15 @@
 const categoryService = require('~/services/category')
+const categoryAggregateOptions = require('~/utils/categories/categoriesAggregateOptions')
 const { INTERNAL_SERVER_ERROR } = require('~/consts/errors')
-const { createError } = require("~/utils/errorsHelper");
+const { createError } = require("~/utils/errorsHelper")
+
+const getCategories = async (req, res) => {
+  const pipeline = categoryAggregateOptions(req.query)
+
+  const offers = await categoryService.getCategories(pipeline)
+
+  res.status(200).json(offers)
+}
 
 const createCategory = async (req, res) => {
     const categoryData = req.body
@@ -18,5 +27,6 @@ const createCategory = async (req, res) => {
 }
 
 module.exports = {
+    getCategories,
     createCategory
 }
