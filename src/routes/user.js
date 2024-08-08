@@ -4,6 +4,7 @@ const idValidation = require('~/middlewares/idValidation')
 const asyncWrapper = require('~/middlewares/asyncWrapper')
 const { restrictTo, authMiddleware } = require('~/middlewares/auth')
 const isEntityValid = require('~/middlewares/entityValidation')
+const upload = require('~/middlewares/multer')
 
 const userController = require('~/controllers/user')
 const User = require('~/models/user')
@@ -160,5 +161,34 @@ router.patch('/:id/change-status', isEntityValid({ params }), asyncWrapper(userC
  *         description: Server error
  */
 router.delete('/:id', isEntityValid({ params }), asyncWrapper(userController.deleteUser))
+
+/**
+ * @swagger
+ * /users/image:
+ *   post:
+ *     summary: Upload a user image
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The image file to upload.
+ *     responses:
+ *       204:
+ *         description: The image was uploaded successfully.
+ *       400:
+ *         description: Bad request, possibly due to invalid file type or size
+ *       401:
+ *         description: Unauthorized access
+ *       500:
+ *         description: Server error
+ */
+router.post('/image', authMiddleware, upload.single('file'), asyncWrapper(userController.uploadImage))
 
 module.exports = router

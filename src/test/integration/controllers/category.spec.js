@@ -1,136 +1,238 @@
 const mongoose = require('mongoose')
 const { serverInit, serverCleanup, stopServer } = require('~/test/setup')
 const tokenService = require('~/services/token')
+const categoryService = require('~/services/category')
 const Category = require('~/models/category')
 const Subject = require('~/models/subject')
+const jwt = require('jsonwebtoken')
+const errors = require('~/consts/errors')
+const { createError } = require('~/utils/errorsHelper')
 
 jest.mock('~/services/token')
-
-const categories = [
-  { _id: mongoose.Types.ObjectId(), name: 'Technology', updatedAt: new Date(), subjects: [] },
-  { _id: mongoose.Types.ObjectId(), name: 'Health', updatedAt: new Date(), subjects: [] },
-  { _id: mongoose.Types.ObjectId(), name: 'Finance', updatedAt: new Date(), subjects: [] }
-]
-
-const subjects = [
-  { _id: mongoose.Types.ObjectId(), name: 'AI', category: categories[0]._id },
-  { _id: mongoose.Types.ObjectId(), name: 'Biology', category: categories[1]._id },
-  { _id: mongoose.Types.ObjectId(), name: 'Finance 101', category: categories[2]._id }
-]
-
+jest.mock('jsonwebtoken')
 
 describe('Category controller', () => {
-  let app, server
+    let app, server
 
-  beforeAll(async () => {
-    ; ({ app, server } = await serverInit())
-  })
+    beforeAll(async () => {
+        ;({ app, server } = await serverInit())
+    })
 
-  beforeEach(async () => {
-    await Category.deleteMany({});
-    await Category.insertMany(categories);
+    afterEach(async () => {
+        await serverCleanup()
+    })
 
-    await Subject.deleteMany({});
-    await Subject.insertMany(subjects);
+    afterAll(async () => {
+        await stopServer(server)
+    })
 
-    tokenService.validateAccessToken.mockReturnValue({ id: 'userId', role: 'user' });
-  })
+    describe('Category Retrieval', () => {
+        const categories = [
+            { _id: mongoose.Types.ObjectId(), name: 'Technology', updatedAt: new Date(), subjects: [] },
+            { _id: mongoose.Types.ObjectId(), name: 'Health', updatedAt: new Date(), subjects: [] },
+            { _id: mongoose.Types.ObjectId(), name: 'Finance', updatedAt: new Date(), subjects: [] }
+        ]
 
-  afterEach(async () => {
-    await serverCleanup()
-  })
+        const subjects = [
+            { _id: mongoose.Types.ObjectId(), name: 'AI', category: categories[0]._id },
+            { _id: mongoose.Types.ObjectId(), name: 'Biology', category: categories[1]._id },
+            { _id: mongoose.Types.ObjectId(), name: 'Finance 101', category: categories[2]._id }
+        ]
 
-  afterAll(async () => {
-    await stopServer(server)
-  })
+        beforeEach(async () => {
+            await Category.deleteMany({})
+            await Category.insertMany(categories)
 
-  test('Should return all categories with default pagination', async () => {
-    const response = await app
-        .get('/categories')
-        .set('Cookie', `accessToken=validAccessToken`)
+            await Subject.deleteMany({})
+            await Subject.insertMany(subjects)
 
+            tokenService.validateAccessToken.mockReturnValue({ id: 'userId', role: 'user' })
+        })
 
-    expect(response.status).toBe(200)
-    expect(response.body.items.length).toBe(3)
-    expect(response.body.items).toEqual(
-        expect.arrayContaining([
-            expect.objectContaining({ name: 'Technology' }),
-            expect.objectContaining({ name: 'Health' }),
-            expect.objectContaining({ name: 'Finance' })
-        ])
-    )
-  })
+        test('Should return all categories with default pagination', async () => {
+            const response = await app
+                .get('/categories')
+                .set('Cookie', `accessToken=validAccessToken`)
 
-  test('Should apply pagination correctly', async () => {
-    const response = await app
-        .get('/categories?limit=2&skip=1')
-        .set('Cookie', `accessToken=validAccessToken`)
+            expect(response.status).toBe(200)
+            expect(response.body.items.length).toBe(3)
+            expect(response.body.items).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ name: 'Technology' }),
+                    expect.objectContaining({ name: 'Health' }),
+                    expect.objectContaining({ name: 'Finance' })
+                ])
+            )
+        })
 
-    console.log(response.body.items)
-    expect(response.status).toBe(200)
-    expect(response.body.items.length).toBe(1)
-    expect(response.body.items).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ name: 'Finance' }),
-        ])
-    )
-  })
+        test('Should apply pagination correctly', async () => {
+            const response = await app
+                .get('/categories?limit=2&skip=1')
+                .set('Cookie', `accessToken=validAccessToken`)
 
-  test('Should filter categories by name', async () => {
-    const response = await app
-        .get('/categories?name=Tech')
-        .set('Cookie', `accessToken=validAccessToken`)
+            expect(response.status).toBe(200)
+            expect(response.body.items.length).toBe(1)
+            expect(response.body.items).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ name: 'Finance' }),
+                ])
+            )
+        })
 
-    expect(response.status).toBe(200)
-    expect(response.body.items.length).toBe(1)
-    expect(response.body.items).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ name: 'Technology' }),
-        ])
-    )
-  })
+        test('Should filter categories by name', async () => {
+            const response = await app
+                .get('/categories?name=Tech')
+                .set('Cookie', `accessToken=validAccessToken`)
 
-  test('Should return empty result set when no categories match the query', async () => {
-    const response = await app
-        .get('/categories?name=NonExistentCategory')
-        .set('Cookie', `accessToken=validAccessToken`)
+            expect(response.status).toBe(200)
+            expect(response.body.items.length).toBe(1)
+            expect(response.body.items).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ name: 'Technology' }),
+                ])
+            )
+        })
 
-    expect(response.status).toBe(200)
-    expect(response.body.items.length).toBe(0)
-  })
+        test('Should return empty result set when no categories match the query', async () => {
+            const response = await app
+                .get('/categories?name=NonExistentCategory')
+                .set('Cookie', `accessToken=validAccessToken`)
 
-  test('Should return all categories when limit exceeds the total count', async () => {
-    const response = await app
-        .get('/categories?limit=100')
-        .set('Cookie', `accessToken=validAccessToken`)
+            expect(response.status).toBe(200)
+            expect(response.body.items.length).toBe(0)
+        })
 
-    expect(response.status).toBe(200)
-    expect(response.body.items.length).toBe(3)
-  })
+        test('Should return all categories when limit exceeds the total count', async () => {
+            const response = await app
+                .get('/categories?limit=100')
+                .set('Cookie', `accessToken=validAccessToken`)
 
-  test('Should exclude categories without subjects', async () => {
-    await Category.create({ _id: mongoose.Types.ObjectId(), name: 'Empty category', updatedAt: new Date(), subjects: []  })
+            expect(response.status).toBe(200)
+            expect(response.body.items.length).toBe(3)
+        })
 
-    const response = await app
-        .get('/categories')
-        .set('Cookie', 'accessToken=validAccessToken')
+        test('Should exclude categories without subjects', async () => {
+            await Category.create({ _id: mongoose.Types.ObjectId(), name: 'Empty category', updatedAt: new Date(), subjects: [] })
 
-    expect(response.status).toBe(200)
-    expect(response.body.items.length).toBe(3)
-    expect(response.body.items).not.toEqual(
-        expect.arrayContaining(([
-            expect.objectContaining({ name: 'Empty category' })
-        ]))
-    )
-  })
+            const response = await app
+                .get('/categories')
+                .set('Cookie', 'accessToken=validAccessToken')
 
-  test('Should throw 401 for unauthorized user', async () => {
-    tokenService.validateAccessToken.mockReturnValue(null)
+            expect(response.status).toBe(200)
+            expect(response.body.items.length).toBe(3)
+            expect(response.body.items).not.toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ name: 'Empty category' })
+                ])
+            )
+        })
 
-    const response = await app
-        .get('/categories')
-        .set('Cookie', `accessToken=validAccessToken`)
+        test('Should throw 401 for unauthorized user', async () => {
+            tokenService.validateAccessToken.mockReturnValue(null)
 
-    expect(response.status).toBe(401)
-  })
+            const response = await app
+                .get('/categories')
+                .set('Cookie', `accessToken=validAccessToken`)
+
+            expect(response.status).toBe(401)
+        })
+    })
+
+    describe('Category Creation', () => {
+        const mockCategoryData = {
+            name: 'Mathematics',
+            icon: 'mock-icon-path',
+            color: 'mock-color'
+        }
+
+        const mockAdminToken = () => jwt.verify = jest.fn().mockReturnValue({ id: 'admin-id', role: 'admin' })
+        const mockUserToken = () => jwt.verify = jest.fn().mockReturnValue({ id: 'user-id', role: 'user' })
+        const mockInvalidToken = () => jwt.verify = jest.fn(() => { throw new Error('Invalid token') })
+
+        beforeEach(() => {
+            jest.resetAllMocks()
+        })
+
+        test('Should allow admin to create category', async () => {
+            mockAdminToken()
+
+            const response = await app
+                .post('/category')
+                .set('Cookie', ['accessToken=fake-admin-token'])
+                .send(mockCategoryData)
+
+            expect(response.status).toBe(201)
+        })
+
+        test('Should reject non-admin users', async () => {
+            mockUserToken()
+
+            const response = await app
+                .post('/category')
+                .set('Cookie', ['accessToken=fake-user-token'])
+                .send(mockCategoryData)
+
+            expect(response.status).toBe(403)
+            expect(response.body).toEqual({
+                status: 403,
+                ...errors.FORBIDDEN
+            })
+        })
+
+        test('Should reject requests with invalid token', async () => {
+            mockInvalidToken()
+
+            const response = await app
+                .post('/category')
+                .set('Cookie', ['accessToken=fake-token'])
+                .send(mockCategoryData)
+
+            expect(response.status).toBe(401)
+        })
+
+        test('Should reject requests with no token', async () => {
+            const response = await app
+                .post('/category')
+                .send(mockCategoryData)
+
+            expect(response.status).toBe(401)
+        })
+
+        test('Should reject requests with incomplete body', async () => {
+            mockAdminToken()
+
+            const incompleteData = { name: 'Mathematics' }
+
+            const response = await app
+                .post('/category')
+                .set('Cookie', ['accessToken=fake-admin-token'])
+                .send(incompleteData)
+
+            expect(response.status).toBe(400)
+            expect(response.body).toEqual({
+                status: 400,
+                ...errors.BAD_REQUEST
+            })
+        })
+
+        test('Should handle 500 internal server errors', async () => {
+            mockAdminToken()
+
+            jest.spyOn(categoryService, 'createCategory')
+                .mockImplementation(() => {
+                    throw new Error('Unexpected error')
+                })
+
+            const response = await app
+                .post('/category')
+                .set('Cookie', ['accessToken=fake-admin-token'])
+                .send(mockCategoryData)
+
+            expect(response.status).toBe(500)
+            expect(response.body).toEqual({
+                ...createError(500, errors.INTERNAL_SERVER_ERROR),
+                message: ''
+            })
+        })
+    })
 })

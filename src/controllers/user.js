@@ -1,4 +1,6 @@
+const User = require('~/models/user')
 const userService = require('~/services/user')
+const imageService = require('~/services/image')
 const { createForbiddenError } = require('~/utils/errorsHelper')
 const createAggregateOptions = require('~/utils/users/createAggregateOptions')
 
@@ -48,10 +50,31 @@ const deleteUser = async (req, res) => {
   res.status(204).end()
 }
 
+const uploadImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.sendStatus(400)
+    }
+
+    const userId = req.user._id
+    const buffer = req.file.buffer
+    const mimetype = req.file.mimetype
+
+    await imageService.uploadImage(buffer, mimetype, userId)
+
+    await User.findByIdAndUpdate(userId, { photo: `images/${userId}` })
+
+    res.sendStatus(204)
+  } catch (error) {
+    res.sendStatus(500)
+  }
+}
+
 module.exports = {
   getUsers,
   getUserById,
   deleteUser,
   updateUser,
-  updateStatus
+  updateStatus,
+  uploadImage
 }

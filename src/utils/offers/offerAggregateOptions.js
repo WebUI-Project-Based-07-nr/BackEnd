@@ -12,6 +12,8 @@ const offerAggregateOptions = (query, params) => {
     languages,
     nativeLanguage,
     excludedOfferId,
+    category,
+    subject,
     sort = 'createdAt',
     status,
     skip = 0,
@@ -77,6 +79,14 @@ const offerAggregateOptions = (query, params) => {
     match._id = { $ne: mongoose.Types.ObjectId(excludedOfferId) }
   }
 
+  if (category) {
+    match.category = mongoose.Types.ObjectId(category)
+  }
+
+  if (subject) {
+    match['subject.name'] = getRegex(subject)
+  }
+
   let sortOption = {}
 
   if (sort) {
@@ -125,6 +135,17 @@ const offerAggregateOptions = (query, params) => {
     },
     {
       $unwind: '$author'
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'category',
+        foreignField: '_id',
+        as: 'category'
+      }
+    },
+    {
+      $unwind: '$category'
     },
     {
       $match: match
