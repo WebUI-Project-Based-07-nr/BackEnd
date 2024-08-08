@@ -1,16 +1,21 @@
 const router = require('express').Router()
 
 const asyncWrapper = require('~/middlewares/asyncWrapper')
+const idValidation = require('~/middlewares/idValidation')
+const isEntityValid = require('~/middlewares/entityValidation')
 const categoryController = require('~/controllers/category')
 const { authMiddleware, restrictTo } = require('~/middlewares/auth')
+const Category = require('~/models/category')
 
 const {
     roles: { ADMIN }
 } = require('~/consts/auth')
 
-router.use(authMiddleware)
-router.use(restrictTo(ADMIN))
+const params = [{ model: Category, idName: 'id' }]
 
+router.use(authMiddleware)
+
+router.param('id', idValidation)
 
 /**
  * @swagger
@@ -84,6 +89,10 @@ router.use(restrictTo(ADMIN))
  */
 router.get('/', asyncWrapper(categoryController.getCategories))
 
+router.get('/:id/subjects/names', isEntityValid({ params }), asyncWrapper(categoryController.getSubjectNamesById))
+
+/** @swagger
+ * /categories:
  *   post:
  *     summary: Create a new category
  *     tags: [Category]
@@ -109,7 +118,7 @@ router.get('/', asyncWrapper(categoryController.getCategories))
  *       500:
  *         description: Server error
  */
-router.post('/', asyncWrapper(categoryController.createCategory))
 
+router.post('/', restrictTo(ADMIN), asyncWrapper(categoryController.createCategory))
 
 module.exports = router
