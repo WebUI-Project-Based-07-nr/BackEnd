@@ -21,3 +21,6 @@ test-report.xml
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# third-party configurations
+.firebase-service-account.json
