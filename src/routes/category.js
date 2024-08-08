@@ -5,12 +5,11 @@ const categoryController = require('~/controllers/category')
 const { authMiddleware, restrictTo } = require('~/middlewares/auth')
 
 const {
-    roles: { ADMIN }
+  roles: { ADMIN }
 } = require('~/consts/auth')
 
 router.use(authMiddleware)
 router.use(restrictTo(ADMIN))
-
 
 /**
  * @swagger
@@ -84,6 +83,8 @@ router.use(restrictTo(ADMIN))
  */
 router.get('/', asyncWrapper(categoryController.getCategories))
 
+/**
+ * @swagger
  *   post:
  *     summary: Create a new category
  *     tags: [Category]
@@ -110,6 +111,5 @@ router.get('/', asyncWrapper(categoryController.getCategories))
  *         description: Server error
  */
 router.post('/', asyncWrapper(categoryController.createCategory))
-
 
 module.exports = router
