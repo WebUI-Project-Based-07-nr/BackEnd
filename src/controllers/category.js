@@ -1,6 +1,9 @@
 const categoryService = require('~/services/category')
 const categoryAggregateOptions = require('~/utils/categories/categoriesAggregateOptions')
-const { INTERNAL_SERVER_ERROR } = require('~/consts/errors')
+const {
+  INTERNAL_SERVER_ERROR,
+  BAD_REQUEST
+} = require('~/consts/errors')
 const { createError } = require("~/utils/errorsHelper")
 
 const getCategories = async (req, res) => {
@@ -26,7 +29,18 @@ const createCategory = async (req, res) => {
     }
 }
 
+const getSubjectNamesById = async (req, res) => {
+  const { id } = req.params
+  if (!id) {
+    throw createError(400, BAD_REQUEST)
+  }
+
+  const subjects = await categoryService.getSubjectNamesById(id)
+  res.status(200).json(subjects)
+}
+
 module.exports = {
     getCategories,
-    createCategory
+    createCategory,
+    getSubjectNamesById
 }
