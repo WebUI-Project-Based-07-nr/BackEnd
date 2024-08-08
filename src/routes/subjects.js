@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const asyncWrapper = require('~/middlewares/asyncWrapper')
-const subjectController = require('~/controllers/subjectController')
+const subjectController = require('~/controllers/subject')
 const { authMiddleware, restrictTo } = require('~/middlewares/auth')
 
 const {
@@ -77,5 +77,6 @@ router.use(restrictTo(ADMIN, TEACHER, STUDENT))
  *         description: Server error
  */
 router.get('/', asyncWrapper(subjectController.getSubjects))
+router.post('/', asyncWrapper(subjectController.createSubject))
 
 module.exports = router

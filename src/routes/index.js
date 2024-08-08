@@ -22,6 +22,6 @@ router.use('/offers', offer)
 router.use('/confirm-email', confirmEmail)
 router.use('/location', location)
 router.use('/categories', category)
-router.use('/api/subjects', subject)
+router.use('/subjects', subject)
 
 module.exports = router
