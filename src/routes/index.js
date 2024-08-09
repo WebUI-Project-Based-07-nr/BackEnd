@@ -7,9 +7,10 @@ const adminInvitation = require('~/routes/adminInvitation')
 const question = require('~/routes/question')
 const resourcesCategory = require('~/routes/resourcesCategory')
 const offer = require('~/routes/offer')
-const confirmEmail = require(`~/routes/confirmEmail`)
+const confirmEmail = require('~/routes/confirmEmail')
 const location = require('~/routes/location')
 const category = require('~/routes/category')
+const subject = require('~/routes/subjects')
 
 router.use('/auth', auth)
 router.use('/users', user)
@@ -21,5 +22,6 @@ router.use('/offers', offer)
 router.use('/confirm-email', confirmEmail)
 router.use('/location', location)
 router.use('/categories', category)
+router.use('/subjects', subject)
 
 module.exports = router
