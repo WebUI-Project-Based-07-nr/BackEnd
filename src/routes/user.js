@@ -191,4 +191,6 @@ router.delete('/:id', isEntityValid({ params }), asyncWrapper(userController.del
  */
 router.post('/image', authMiddleware, upload.single('file'), asyncWrapper(userController.uploadImage))
 
+router.get('/image', authMiddleware, asyncWrapper(userController.getUserImage))
+
 module.exports = router
