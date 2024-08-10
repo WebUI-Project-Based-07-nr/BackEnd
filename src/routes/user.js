@@ -47,6 +47,33 @@ router.param('id', idValidation)
  */
 router.post('/image', authMiddleware, upload.single('file'), asyncWrapper(userController.uploadImage))
 
+/**
+ * @swagger
+ * /users/image:
+ *   get:
+ *     summary: Get the user's image URL
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the user's image URL
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 photoURL:
+ *                   type: string
+ *                   description: The URL of the user's photo
+ *                   example: "https://your-storage-bucket.com/images/userId.jpg"
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: User or image not found
+ *       500:
+ *         description: Server error
+ */
 router.get('/image', authMiddleware, asyncWrapper(userController.getUserImage))
 
 /**
