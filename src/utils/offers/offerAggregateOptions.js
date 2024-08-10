@@ -156,6 +156,9 @@ const offerAggregateOptions = (query, params) => {
       $unwind: '$category'
     },
     {
+      $unwind: '$subject'
+    },
+    {
       $match: match
     },
     {
