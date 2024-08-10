@@ -51,7 +51,7 @@ const deleteUser = async (req, res) => {
 }
 
 const getUserImage = async (req, res) => {
-  const userId = req.user._id
+  const userId = req.user.id
 
   const photoURL = await imageService.getImage(userId)
 
@@ -65,7 +65,7 @@ const uploadImage = async (req, res) => {
       return res.sendStatus(400)
     }
 
-    const userId = req.user._id
+    const userId = req.user.id
     const buffer = req.file.buffer
     const mimetype = req.file.mimetype
 
