@@ -2,6 +2,7 @@ const subjectService = require('~/services/subject')
 const { createError } = require('~/utils/errorsHelper')
 const { BAD_REQUEST } = require('~/consts/errors')
 const { INTERNAL_SERVER_ERROR } = require('~/consts/errors')
+const { ObjectId } = require('mongodb')
 
 const getSubjects = async (req, res) => {
   try {
@@ -13,7 +14,7 @@ const getSubjects = async (req, res) => {
 
     const filter = {}
     if (category) {
-      filter.category = category
+      filter.category = new ObjectId(category)
     }
 
     const pipeline = [
