@@ -6,11 +6,8 @@ const {
 const {
   tokenNames: { REFRESH_TOKEN, ACCESS_TOKEN }
 } = require('~/consts/auth')
-const { createError } = require("~/utils/errorsHelper");
-const {
-  BAD_ID_TOKEN,
-  ID_TOKEN_NOT_RETRIEVED
-} = require('~/consts/errors')
+const { createError } = require('~/utils/errorsHelper')
+const { BAD_ID_TOKEN, ID_TOKEN_NOT_RETRIEVED } = require('~/consts/errors')
 
 const COOKIE_OPTIONS = {
   maxAge: oneDayInMs,
@@ -21,10 +18,9 @@ const COOKIE_OPTIONS = {
 }
 
 const signup = async (req, res) => {
-  const { role, firstName, lastName, email, password } = req.body
-  const lang = req.lang
+  const { role, firstName, lastName, email, password, lang, nativeLanguage } = req.body
 
-  const userData = await authService.signup(role, firstName, lastName, email, password, lang)
+  const userData = await authService.signup(role, firstName, lastName, email, password, lang, nativeLanguage)
 
   res.status(201).json(userData)
 }
