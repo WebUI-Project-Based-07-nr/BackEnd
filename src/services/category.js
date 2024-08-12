@@ -9,7 +9,7 @@ const categoryService = {
         return response
     },
       
-    createCategory: async ({ name, icon, color }) => {
+    createCategory: async ({ name, appearance: {icon, color} }) => {
         if (!name || !icon || !color) {
             throw createError(400, BAD_REQUEST)
         }
