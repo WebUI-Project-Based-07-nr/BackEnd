@@ -20,6 +20,64 @@ router.param('id', idValidation)
 
 /**
  * @swagger
+ * /users/image:
+ *   post:
+ *     summary: Upload a user image
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The image file to upload.
+ *     responses:
+ *       204:
+ *         description: The image was uploaded successfully.
+ *       400:
+ *         description: Bad request, possibly due to invalid file type or size
+ *       401:
+ *         description: Unauthorized access
+ *       500:
+ *         description: Server error
+ */
+router.post('/image', authMiddleware, upload.single('file'), asyncWrapper(userController.uploadImage))
+
+/**
+ * @swagger
+ * /users/image:
+ *   get:
+ *     summary: Get the user's image URL
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the user's image URL
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 photoURL:
+ *                   type: string
+ *                   description: The URL of the user's photo
+ *                   example: "https://your-storage-bucket.com/images/userId.jpg"
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: User or image not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/image', authMiddleware, asyncWrapper(userController.getUserImage))
+
+/**
+ * @swagger
  * /users:
  *   get:
  *     summary: Get all users
@@ -161,34 +219,5 @@ router.patch('/:id/change-status', isEntityValid({ params }), asyncWrapper(userC
  *         description: Server error
  */
 router.delete('/:id', isEntityValid({ params }), asyncWrapper(userController.deleteUser))
-
-/**
- * @swagger
- * /users/image:
- *   post:
- *     summary: Upload a user image
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               file:
- *                 type: string
- *                 format: binary
- *                 description: The image file to upload.
- *     responses:
- *       204:
- *         description: The image was uploaded successfully.
- *       400:
- *         description: Bad request, possibly due to invalid file type or size
- *       401:
- *         description: Unauthorized access
- *       500:
- *         description: Server error
- */
-router.post('/image', authMiddleware, upload.single('file'), asyncWrapper(userController.uploadImage))
 
 module.exports = router
