@@ -1,10 +1,11 @@
+const User = require('~/models/user')
 const { serverInit, serverCleanup, stopServer } = require('~/test/setup')
 const { expectError } = require('~/test/helpers')
 const { UNAUTHORIZED, FORBIDDEN } = require('~/consts/errors')
 const testUserAuthentication = require('~/utils/testUserAuth')
 const TokenService = require('~/services/token')
 const {
-  roles: { TUTOR }
+  roles: { TUTOR, STUDENT }
 } = require('~/consts/auth')
 
 const endpointUrl = '/resources-categories/'
@@ -13,32 +14,20 @@ const testResourceCategoryData = {
   name: 'Chemical Category'
 }
 
-const studentUserData = {
-  role: 'student',
-  firstName: 'Yamada',
-  lastName: 'Kizen',
-  email: 'yamakai@gmail.com',
-  password: 'ninpopass',
-  appLanguage: 'en',
-  isEmailConfirmed: true,
-  lastLogin: new Date().toJSON(),
-  lastLoginAs: 'student'
-}
-
 const updateResourceCategoryData = {
   name: 'Computer Science'
 }
 
 describe('ResourceCategory controller', () => {
-  let app, server, accessToken, currentUser, studentAccessToken, testResourceCategory
+  let app, server, accessToken, currentUser, testResourceCategory
 
   beforeAll(async () => {
     ; ({ app, server } = await serverInit())
+    await serverCleanup()
   })
 
   beforeEach(async () => {
     accessToken = await testUserAuthentication(app, { role: TUTOR })
-    studentAccessToken = await testUserAuthentication(app, studentUserData)
 
     currentUser = TokenService.validateAccessToken(accessToken)
 
@@ -50,6 +39,7 @@ describe('ResourceCategory controller', () => {
 
   afterEach(async () => {
     await serverCleanup()
+    jest.restoreAllMocks()
   })
 
   afterAll(async () => {
@@ -75,10 +65,12 @@ describe('ResourceCategory controller', () => {
     })
 
     it('should throw FORBIDDEN', async () => {
+      jest.spyOn(TokenService, 'validateAccessToken').mockReturnValue({ role: 'user' })
+
       const response = await app
         .post(endpointUrl)
         .send(testResourceCategoryData)
-        .set('Cookie', [`accessToken=${studentAccessToken}`])
+        .set('Cookie', [`accessToken=mockUserToken`])
 
       expectError(403, FORBIDDEN, response)
     })
@@ -101,10 +93,12 @@ describe('ResourceCategory controller', () => {
     })
 
     it('should throw FORBIDDEN', async () => {
+      jest.spyOn(TokenService, 'validateAccessToken').mockReturnValue({ role: 'user' })
+
       const response = await app
-        .patch(endpointUrl)
+        .patch(endpointUrl + testResourceCategory.body._id)
         .send(updateResourceCategoryData)
-        .set('Cookie', [`accessToken=${studentAccessToken}`])
+        .set('Cookie', [`accessToken=mockStudentToken`])
 
       expectError(403, FORBIDDEN, response)
     })
