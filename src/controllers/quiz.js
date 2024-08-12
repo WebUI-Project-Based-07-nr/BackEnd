@@ -13,7 +13,18 @@ const getQuizById = async (req, res) => {
   res.status(200).json(quiz)
 }
 
+const createQuiz = async (req, res) => {
+  const quizData = req.body
+
+  const newQuiz = await quizService.createQuiz(quizData)
+
+  res.status(201).json({
+    status: 'success',
+    data: newQuiz
+  })
+}
+
 module.exports = {
   getQuizzes,
-  getQuizById
-}
+  getQuizById,
+  createQuiz,}
