@@ -1,5 +1,5 @@
 const Category = require('~/models/category')
-const { createError } = require("~/utils/errorsHelper")
+const { createError } = require('~/utils/errorsHelper')
 const { DOCUMENT_ALREADY_EXISTS, BAD_REQUEST } = require('~/consts/errors')
 
 
