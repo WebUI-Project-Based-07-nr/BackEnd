@@ -1,8 +1,8 @@
 const { Schema, model } = require('mongoose')
 
-const { QUIZ, QUESTION, AUTHOR, RESOURCES_CATEGORY } = require('~/consts/models')
+const { QUIZ, QUESTION, USER, RESOURCES_CATEGORY } = require('~/consts/models')
 const {
-  enum: { RESOURCES_TYPES_ENUM }
+  enums: { RESOURCES_TYPES_ENUM }
 } = require('~/consts/validation')
 const {
   FIELD_CANNOT_BE_EMPTY,
@@ -31,7 +31,7 @@ const quizSchema = new Schema({
   },
   author: {
     type: Schema.Types.ObjectId,
-    ref: AUTHOR,
+    ref: USER,
     required: [true, FIELD_CANNOT_BE_EMPTY('author')]
   },
   category: {
