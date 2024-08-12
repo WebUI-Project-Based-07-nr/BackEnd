@@ -24,7 +24,17 @@ const createQuiz = async (req, res) => {
   })
 }
 
+const deleteQuiz = async (req, res) => {
+  const { id } = req.params
+
+  await quizService.deleteQuiz(id)
+
+  res.status(204).end()
+}
+
 module.exports = {
   getQuizzes,
   getQuizById,
-  createQuiz,}
+  createQuiz,
+  deleteQuiz
+}

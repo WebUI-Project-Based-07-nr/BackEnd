@@ -18,6 +18,10 @@ const quizService = {
     }
 
     return Quiz.create(quizData)
+  },
+
+  deleteQuiz: async (id) => {
+    return Quiz.findByIdAndRemove(id).exec()
   }
 }
 
