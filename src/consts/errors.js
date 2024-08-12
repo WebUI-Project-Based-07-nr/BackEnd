@@ -79,6 +79,10 @@ const errors = {
     code: 'DUPLICATE_LESSON',
     message: 'A lesson with the same title, author, and category already exists.'
   },
+  DUPLICATE_QUIZ: {
+    code: 'DUPLICATE_QUIZ',
+    message: 'A quiz with the same title already exists'
+  },
   BAD_RESET_TOKEN: {
     code: 'BAD_RESET_TOKEN',
     message: 'The reset token is either invalid or has expired.'
