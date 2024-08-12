@@ -21,10 +21,10 @@ const COOKIE_OPTIONS = {
 }
 
 const signup = async (req, res) => {
-  const { role, firstName, lastName, email, password } = req.body
+  const { role, firstName, lastName, email, password, nativeLanguage } = req.body
   const lang = req.lang
 
-  const userData = await authService.signup(role, firstName, lastName, email, password, lang)
+  const userData = await authService.signup(role, firstName, lastName, email, password, lang, nativeLanguage)
 
   res.status(201).json(userData)
 }

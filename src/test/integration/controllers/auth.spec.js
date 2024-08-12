@@ -35,7 +35,8 @@ describe('Auth controller', () => {
     firstName: 'test',
     lastName: 'test',
     email: 'test@gmail.com',
-    password: 'testpass_135'
+    password: 'testpass_135',
+    nativeLanguage: 'English'
   }
 
   describe('Signup endpoint', () => {
@@ -126,8 +127,8 @@ describe('Auth controller', () => {
             expect.stringContaining('ACCESS_TOKEN=access-token'),
             expect.stringContaining('REFRESH_TOKEN=refresh-token')
           ])
-      );
-    });
+      )
+    })
 
     it('should throw ID_TOKEN_NOT_RETRIEVED with 400 status if token was not provided', async () => {
       const response = await app
