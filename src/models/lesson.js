@@ -2,7 +2,7 @@ const { Schema, model} = require('mongoose')
 
 const { LESSON, USER, RESOURCES_CATEGORY } = require('~/consts/models')
 const {
-    enum: { RESOURCES_TYPES_ENUM }
+    enums: { RESOURCES_TYPES_ENUM }
 } = require('~/consts/validation')
 const {
     FIELD_CANNOT_BE_EMPTY,
