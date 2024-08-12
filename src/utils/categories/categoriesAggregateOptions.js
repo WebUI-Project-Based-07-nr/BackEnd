@@ -20,8 +20,6 @@ const categoriesAggregateOptions = (query) => {
     {
       $match: {
         name: getRegex(name)
-        // subjects: { $exists: true, $ne: [] },
-        // offers: { $exists: true, $ne: [] }
       }
     },
     {
