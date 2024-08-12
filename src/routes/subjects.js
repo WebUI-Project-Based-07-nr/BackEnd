@@ -8,7 +8,6 @@ const {
 } = require('~/consts/auth')
 
 router.use(authMiddleware)
-router.use(restrictTo(ADMIN, TEACHER, STUDENT))
 
 /**
  * @swagger
@@ -77,6 +76,6 @@ router.use(restrictTo(ADMIN, TEACHER, STUDENT))
  *         description: Server error
  */
 router.get('/', asyncWrapper(subjectController.getSubjects))
-router.post('/', asyncWrapper(subjectController.createSubject))
+router.post('/', restrictTo(ADMIN), asyncWrapper(subjectController.createSubject))
 
 module.exports = router
