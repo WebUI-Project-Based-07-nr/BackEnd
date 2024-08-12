@@ -6,16 +6,22 @@ const categoriesAggregateOptions = (query) => {
   return [
     {
       $lookup: {
-        from: 'subjects',
+        from: 'offers',
         localField: '_id',
         foreignField: 'category',
-        as: 'subjects'
+        as: 'offers'
+      }
+    },
+    {
+      $addFields: {
+        totalOffers: { $size: '$offers' } 
       }
     },
     {
       $match: {
-        name: getRegex(name),
-        subjects: { $exists: true, $ne: [] }
+        name: getRegex(name)
+        // subjects: { $exists: true, $ne: [] },
+        // offers: { $exists: true, $ne: [] }
       }
     },
     {
@@ -26,11 +32,6 @@ const categoriesAggregateOptions = (query) => {
     },
     {
       $limit: parseInt(limit)
-    },
-    {
-      $project: {
-        subjects: 0
-      }
     },
     {
       $facet: {
