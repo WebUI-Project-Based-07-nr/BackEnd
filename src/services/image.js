@@ -1,6 +1,16 @@
 const admin = require('firebase-admin')
+const User = require('~/models/user')
 
 const imageService = {
+  getImage: async (userId) => {
+    const user = await User.findById(userId)
+    if (!user || !user.photo) {
+      return null
+    }
+
+    return user.photo
+  },
+
   uploadImage: async (fileBuffer, mimetype, userId) => {
     const bucket = admin.storage().bucket()
     const filePath = `images/${userId}`
@@ -16,8 +26,9 @@ const imageService = {
       blobStream.on('error', (err) => reject(new Error('File upload failed: ' + err.message)))
 
       blobStream.on('finish', async () => {
-        await imageRef.makePublic();
-        resolve()
+        await imageRef.makePublic()
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`
+        resolve(publicUrl)
       })
 
       blobStream.end(fileBuffer)

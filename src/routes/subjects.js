@@ -1,14 +1,9 @@
 const router = require('express').Router()
 const asyncWrapper = require('~/middlewares/asyncWrapper')
 const subjectController = require('~/controllers/subject')
-const { authMiddleware, restrictTo } = require('~/middlewares/auth')
-
-const {
-  roles: { ADMIN, TEACHER, STUDENT }
-} = require('~/consts/auth')
+const { authMiddleware } = require('~/middlewares/auth')
 
 router.use(authMiddleware)
-router.use(restrictTo(ADMIN, TEACHER, STUDENT))
 
 /**
  * @swagger
