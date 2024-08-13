@@ -11,6 +11,7 @@ const confirmEmail = require('~/routes/confirmEmail')
 const location = require('~/routes/location')
 const category = require('~/routes/category')
 const subject = require('~/routes/subjects')
+const lesson = require('~/routes/lesson')
 
 router.use('/auth', auth)
 router.use('/users', user)
@@ -23,5 +24,6 @@ router.use('/confirm-email', confirmEmail)
 router.use('/location', location)
 router.use('/categories', category)
 router.use('/subjects', subject)
+router.use('/lessons', lesson)
 
 module.exports = router

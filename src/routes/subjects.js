@@ -1,13 +1,20 @@
 const router = require('express').Router()
-const asyncWrapper = require('~/middlewares/asyncWrapper')
-const subjectController = require('~/controllers/subject')
-const { authMiddleware, restrictTo } = require('~/middlewares/auth')
 
-const {
-  roles: { ADMIN, TEACHER, STUDENT }
-} = require('~/consts/auth')
+const asyncWrapper = require('~/middlewares/asyncWrapper')
+const { authMiddleware, restrictTo } = require('~/middlewares/auth')
+const isEntityValid = require('~/middlewares/entityValidation')
+const idValidation = require('~/middlewares/idValidation')
+
+const subjectController = require('~/controllers/subject')
+const Subject = require('~/models/subject')
+
 
 router.use(authMiddleware)
+
+const params = [{ model: Subject, idName: 'id' }]
+
+router.param('id', idValidation)
+
 
 /**
  * @swagger
@@ -77,5 +84,32 @@ router.use(authMiddleware)
  */
 router.get('/', asyncWrapper(subjectController.getSubjects))
 router.post('/', restrictTo(ADMIN), asyncWrapper(subjectController.createSubject))
+
+/**
+ * @swagger
+ * /subjects/{id}:
+ *   delete:
+ *     summary: Delete a subject by ID
+ *     tags: [Subjects]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the subject
+ *     responses:
+ *       204:
+ *         description: Subject deleted successfully
+ *       400:
+ *         description: ID is invalid
+ *       401:
+ *         description: Unauthorized access
+ *       404:
+ *         description: Subject not found
+ *       500:
+ *         description: Server error
+ */
+router.delete('/:id', isEntityValid({ params }), asyncWrapper(subjectController.deleteSubject))
 
 module.exports = router

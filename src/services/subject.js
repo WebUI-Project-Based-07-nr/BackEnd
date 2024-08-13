@@ -47,13 +47,7 @@ const subjectService = {
   },
 
   deleteSubject: async (subjectId) => {
-    const subject = await Subject.findById(subjectId)
-    if (!subject) {
-      throw createError(404, NOT_FOUND('Subject'))
-    }
-
-    await subject.remove()
-    return { message: 'Subject deleted successfully' }
+    await Subject.findByIdAndRemove(subjectId).exec()
   }
 }
 
