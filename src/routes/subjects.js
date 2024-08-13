@@ -4,6 +4,9 @@ const asyncWrapper = require('~/middlewares/asyncWrapper')
 const { authMiddleware, restrictTo } = require('~/middlewares/auth')
 const isEntityValid = require('~/middlewares/entityValidation')
 const idValidation = require('~/middlewares/idValidation')
+const {
+  roles: { ADMIN }
+} = require('~/consts/auth')
 
 const subjectController = require('~/controllers/subject')
 const Subject = require('~/models/subject')
