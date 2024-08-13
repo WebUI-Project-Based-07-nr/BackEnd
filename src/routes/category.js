@@ -105,6 +105,6 @@ router.get('/', asyncWrapper(categoryController.getCategories))
  *       500:
  *         description: Server error
  */
-router.post('/', asyncWrapper(categoryController.createCategory))
+router.post('/', restrictTo(ADMIN), asyncWrapper(categoryController.createCategory))
 
 module.exports = router

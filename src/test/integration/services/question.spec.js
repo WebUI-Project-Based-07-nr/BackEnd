@@ -13,6 +13,7 @@ const createUser = async (userData) => {
     userData.email,
     userData.password,
     userData.appLanguage,
+    userData.nativeLanguage,
     userData.isEmailConfirmed
   )
 }
@@ -39,6 +40,7 @@ describe('Question service', () => {
     email: 'test.test@example.com',
     password: 'password123',
     appLanguage: 'en',
+    nativeLanguage: 'Ukrainian',
     isEmailConfirmed: false
   }
 

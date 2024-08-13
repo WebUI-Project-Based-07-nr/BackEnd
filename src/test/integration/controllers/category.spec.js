@@ -46,7 +46,7 @@ describe('Category controller', () => {
             await Subject.deleteMany({})
             await Subject.insertMany(subjects)
 
-            tokenService.validateAccessToken.mockReturnValue({ id: 'userId', role: 'user' })
+            tokenService.validateAccessToken.mockReturnValue({ id: 'mockUserId', role: 'user' })
         })
 
         test('Should return all categories with default pagination', async () => {
@@ -145,19 +145,19 @@ describe('Category controller', () => {
             color: 'mock-color'
         }
 
-        const mockAdminToken = () => jwt.verify = jest.fn().mockReturnValue({ id: 'admin-id', role: 'admin' })
-        const mockUserToken = () => jwt.verify = jest.fn().mockReturnValue({ id: 'user-id', role: 'user' })
-        const mockInvalidToken = () => jwt.verify = jest.fn(() => { throw new Error('Invalid token') })
-
         beforeEach(() => {
             jest.resetAllMocks()
         })
+
+        const mockAdminToken = () => tokenService.validateAccessToken.mockReturnValue({ id: 'mockAdminId', role: 'admin' })
+        const mockUserToken = () => tokenService.validateAccessToken.mockReturnValue({ id: 'mockUserId', role: 'user' })
+        const mockInvalidToken = () => tokenService.validateAccessToken.mockReturnValue(null)
 
         test('Should allow admin to create category', async () => {
             mockAdminToken()
 
             const response = await app
-                .post('/category')
+                .post('/categories')
                 .set('Cookie', ['accessToken=fake-admin-token'])
                 .send(mockCategoryData)
 
@@ -168,7 +168,7 @@ describe('Category controller', () => {
             mockUserToken()
 
             const response = await app
-                .post('/category')
+                .post('/categories')
                 .set('Cookie', ['accessToken=fake-user-token'])
                 .send(mockCategoryData)
 
@@ -183,7 +183,7 @@ describe('Category controller', () => {
             mockInvalidToken()
 
             const response = await app
-                .post('/category')
+                .post('/categories')
                 .set('Cookie', ['accessToken=fake-token'])
                 .send(mockCategoryData)
 
@@ -192,7 +192,7 @@ describe('Category controller', () => {
 
         test('Should reject requests with no token', async () => {
             const response = await app
-                .post('/category')
+                .post('/categories')
                 .send(mockCategoryData)
 
             expect(response.status).toBe(401)
@@ -204,7 +204,7 @@ describe('Category controller', () => {
             const incompleteData = { name: 'Mathematics' }
 
             const response = await app
-                .post('/category')
+                .post('/categories')
                 .set('Cookie', ['accessToken=fake-admin-token'])
                 .send(incompleteData)
 
@@ -224,7 +224,7 @@ describe('Category controller', () => {
                 })
 
             const response = await app
-                .post('/category')
+                .post('/categories')
                 .set('Cookie', ['accessToken=fake-admin-token'])
                 .send(mockCategoryData)
 

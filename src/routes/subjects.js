@@ -15,6 +15,7 @@ const params = [{ model: Subject, idName: 'id' }]
 
 router.param('id', idValidation)
 
+
 /**
  * @swagger
  * /subjects:
@@ -82,7 +83,7 @@ router.param('id', idValidation)
  *         description: Server error
  */
 router.get('/', asyncWrapper(subjectController.getSubjects))
-router.post('/', asyncWrapper(subjectController.createSubject))
+router.post('/', restrictTo(ADMIN), asyncWrapper(subjectController.createSubject))
 
 /**
  * @swagger

@@ -41,6 +41,9 @@ jobs:
         with:
           node-version: 14
 
+      - name: 'Decode and save Firebase service account JSON'
+        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASE64 }}" | base64 --decode > firebase-service-account.json
+
       - name: 'Install dependencies'
         run: npm install
 
@@ -77,3 +80,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: 'Clean up Firebase service account JSON'
+        run: rm -f firebase-service-account.json

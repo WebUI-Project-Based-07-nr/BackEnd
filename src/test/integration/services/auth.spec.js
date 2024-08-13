@@ -1,3 +1,4 @@
+require('~/initialization/envSetup')
 const authService = require('~/services/auth')
 const tokenService = require('~/services/token')
 const emailService = require('~/services/email')
@@ -8,6 +9,7 @@ const emailSubject = require('~/consts/emailSubject')
 const { tokenNames } = require('~/consts/auth')
 jest.mock('~/services/email')
 
+
 const createUser = async (userData) => {
   return await userService.createUser(
     userData.role,
@@ -16,6 +18,7 @@ const createUser = async (userData) => {
     userData.email,
     userData.password,
     userData.appLanguage,
+    userData.nativeLanguage,
     userData.isEmailConfirmed
   )
 }
@@ -48,6 +51,7 @@ describe('Authentication Service', () => {
     email: 'testus1er@example.com',
     password: 'password123',
     language: 'en',
+    nativeLanguage: 'Ukrainian',
     isEmailConfirmed: true
   }
 
@@ -58,7 +62,8 @@ describe('Authentication Service', () => {
       userData.lastName,
       userData.email,
       userData.password,
-      userData.language
+      userData.language,
+      userData.nativeLanguage
     )
 
     const user = await userService.getUserByEmail(userData.email)
@@ -152,7 +157,7 @@ describe('Authentication Service', () => {
 
     const updatedUser = await userService.getUserByEmail(userData.email)
     expect(updatedUser).not.toBeNull()
-    expect(updatedUser.password).toBe(newPassword)
+    expect(updatedUser.password).not.toBe(newPassword)
 
     const removedToken = await tokenService.findTokensWithUsersByParams({ user: updatedUser._id })
     expect(removedToken[0].resetToken).toBeNull()

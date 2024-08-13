@@ -24,7 +24,6 @@ const {
 
 const authService = {
   signup: async (role, firstName, lastName, email, password, language, nativeLanguage) => {
-
     const user = await createUser(role, firstName, lastName, email, password, language, nativeLanguage)
     const confirmToken = tokenService.generateConfirmToken({ id: user._id, role })
     await tokenService.saveToken(user._id, confirmToken, CONFIRM_TOKEN)
