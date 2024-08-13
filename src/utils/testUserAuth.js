@@ -1,5 +1,5 @@
 const User = require('~/models/user')
-const bcrypt = require('bcrypt')
+const { encryptPassword } = require('~/utils/users/passwordEncryption')
 
 const testUserAuthentication = async (app, testUser = {}) => {
   const qtyOfMandatorySignupFields = 5
@@ -17,11 +17,9 @@ const testUserAuthentication = async (app, testUser = {}) => {
     }
   }
 
-  testUser.password = await bcrypt.hash(testUser.password, 10)
+  await User.create({ ...testUser, password: await encryptPassword(testUser.password) })
 
-  await User.create({ ...testUser })
-
-  const loginUserResponse = await app.post('/auth/login').send({ email: testUser.email, password: 'Qwerty123@' })
+  const loginUserResponse = await app.post('/auth/login').send({ email: testUser.email, password: testUser.password })
 
   return loginUserResponse.body.accessToken
 }

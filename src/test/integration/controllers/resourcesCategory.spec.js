@@ -1,11 +1,10 @@
-const User = require('~/models/user')
 const { serverInit, serverCleanup, stopServer } = require('~/test/setup')
 const { expectError } = require('~/test/helpers')
 const { UNAUTHORIZED, FORBIDDEN } = require('~/consts/errors')
 const testUserAuthentication = require('~/utils/testUserAuth')
 const TokenService = require('~/services/token')
 const {
-  roles: { TUTOR, STUDENT }
+  roles: { TUTOR }
 } = require('~/consts/auth')
 
 const endpointUrl = '/resources-categories/'
