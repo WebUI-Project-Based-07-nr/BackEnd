@@ -1,4 +1,6 @@
 const Quiz = require('~/models/quiz')
+const filterAllowedFields = require('~/utils/filterAllowedFields')
+const { allowedQuizFieldsForUpdate } = require('~/validation/services/quiz')
 const { createError } = require('~/utils/errorsHelper')
 const errors = require('~/consts/errors')
 
@@ -18,6 +20,19 @@ const quizService = {
     }
 
     return Quiz.create(quizData)
+  },
+
+  updateQuiz: async (updateData, id) => {
+    const filteredUpdatedData = filterAllowedFields(updateData, allowedQuizFieldsForUpdate)
+
+    const quiz = await Quiz.findById(id)
+
+    for (let field in filteredUpdatedData) {
+      quiz[field] = filteredUpdatedData[field]
+    }
+
+    await quiz.validate()
+    await quiz.save()
   },
 
   deleteQuiz: async (id) => {
