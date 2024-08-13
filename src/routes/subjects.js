@@ -1,18 +1,15 @@
 const router = require('express').Router()
 
 const asyncWrapper = require('~/middlewares/asyncWrapper')
-const subjectController = require('~/controllers/subject')
 const { authMiddleware, restrictTo } = require('~/middlewares/auth')
 const isEntityValid = require('~/middlewares/entityValidation')
 const idValidation = require('~/middlewares/idValidation')
 
-const {
-  roles: { ADMIN, TEACHER, STUDENT }
-} = require('~/consts/auth')
+const subjectController = require('~/controllers/subject')
 const Subject = require('~/models/subject')
 
+
 router.use(authMiddleware)
-router.use(restrictTo(ADMIN, TEACHER, STUDENT))
 
 const params = [{ model: Subject, idName: 'id' }]
 

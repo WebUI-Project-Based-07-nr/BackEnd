@@ -50,19 +50,28 @@ const deleteUser = async (req, res) => {
   res.status(204).end()
 }
 
+const getUserImage = async (req, res) => {
+  const userId = req.user.id
+
+  const photoURL = await imageService.getImage(userId)
+
+  res.status(200).json({ photoURL })
+}
+
+
 const uploadImage = async (req, res) => {
   try {
     if (!req.file) {
       return res.sendStatus(400)
     }
 
-    const userId = req.user._id
+    const userId = req.user.id
     const buffer = req.file.buffer
     const mimetype = req.file.mimetype
 
-    await imageService.uploadImage(buffer, mimetype, userId)
+    const imageURL = await imageService.uploadImage(buffer, mimetype, userId)
 
-    await User.findByIdAndUpdate(userId, { photo: `images/${userId}` })
+    await User.findByIdAndUpdate(userId, { photo: imageURL })
 
     res.sendStatus(204)
   } catch (error) {
@@ -76,5 +85,6 @@ module.exports = {
   deleteUser,
   updateUser,
   updateStatus,
+  getUserImage,
   uploadImage
 }
