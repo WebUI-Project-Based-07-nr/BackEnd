@@ -30,26 +30,16 @@ const offerSchema = new Schema(
     title: {
       type: String,
       required: [true, FIELD_CANNOT_BE_EMPTY('title')],
-      minValue: [1, FIELD_CANNOT_BE_SHORTER('title', 1)],
-      maxValue: [100, FIELD_CANNOT_BE_LONGER('title', 100)],
-      validate: {
-        validator: (title) => {
-          return title.trim().length > 0
-        },
-        message: 'Title cannot contain only whitespace'
-      }
+      trim: true,
+      minLength: [1, FIELD_CANNOT_BE_SHORTER('title', 1)],
+      maxLength: [100, FIELD_CANNOT_BE_LONGER('title', 100)]
     },
     description: {
       type: String,
       required: [true, FIELD_CANNOT_BE_EMPTY('description')],
-      minValue: [1, FIELD_CANNOT_BE_SHORTER('description', 1)],
-      maxValue: [1000, FIELD_CANNOT_BE_LONGER('description', 1000)],
-      validate: {
-        validator: (description) => {
-          return description.trim().length > 0
-        },
-        message: 'Description cannot contain only whitespace'
-      }
+      trim: true,
+      minLength: [1, FIELD_CANNOT_BE_SHORTER('description', 1)],
+      maxLength: [1000, FIELD_CANNOT_BE_LONGER('description', 1000)],
     },
     languages: {
       type: [String],
@@ -85,23 +75,13 @@ const offerSchema = new Schema(
         {
           question: {
             type: String,
-            required: [true, FIELD_CANNOT_BE_EMPTY('question')],
-            validate: {
-              validator: (question) => {
-                return question.trim().length > 0
-              },
-              message: 'Question cannot contain only whitespace'
-            }
+            trim: true,
+            required: [true, FIELD_CANNOT_BE_EMPTY('question')]
           },
           answer: {
             type: String,
-            required: [true, FIELD_CANNOT_BE_EMPTY('answer')],
-            validate: {
-              validator: (answer) => {
-                return answer.trim().length > 0
-              },
-              message: 'Answer cannot contain only whitespace'
-            }
+            trim: true,
+            required: [true, FIELD_CANNOT_BE_EMPTY('answer')]
           }
         }
       ]
