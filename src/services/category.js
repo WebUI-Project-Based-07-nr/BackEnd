@@ -9,17 +9,17 @@ const categoryService = {
         return response
     },
       
-    createCategory: async ({ name, appearance: {icon, color} }) => {
-        if (!name || !icon || !color) {
-            throw createError(400, BAD_REQUEST)
+    createCategory: async ({ name, appearance }) => {
+        if (!name || !appearance.icon || !appearance.color) {
+          throw createError(400, BAD_REQUEST)
         }
 
         const existingCategory = await Category.findOne({ name })
         if (existingCategory) {
             throw createError(409, DOCUMENT_ALREADY_EXISTS('name'))
         }
-
-        const category = new Category({ name, icon, color })
+        
+        const category = new Category({ name, appearance })
         return await category.save()
     }
 }
