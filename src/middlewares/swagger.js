@@ -37,7 +37,9 @@ const UpdateUserByIdScheme = require('~/docs/schemas/users/update-user-by-id')
 
 const CategoryScheme = require('~/docs/schemas/category/category')
 const GetCategoriesScheme = require('~/docs/schemas/category/get-categories')
+const GetCategoryByIdScheme = require('~/docs/schemas/category/get-category-by-id')
 const CreateCategoryScheme = require('~/docs/schemas/category/create-category')
+const DeleteCategoryByIdScheme = require('~/docs/schemas/category/delete-category')
 
 const LessonScheme = require('~/docs/schemas/lesson/lesson')
 
@@ -82,6 +84,8 @@ const options = {
         ...UpdateUserByIdScheme,
         ...CategoryScheme,
         ...GetCategoriesScheme,
+        ...GetCategoryByIdScheme,
+        ...DeleteCategoryByIdScheme,
         ...CreateCategoryScheme,
         ...LessonScheme,
         ...SubjectScheme

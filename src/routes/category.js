@@ -130,9 +130,10 @@ router.get('/:id', asyncWrapper(categoryController.getCategoryById))
 
 /**
  * @swagger
+ * /categories:
  *   post:
  *     summary: Create a new category
- *     tags: [Category]
+ *     tags: [Categories]
  *     security:
  *       - cookieAuth: []
  *     requestBody:
@@ -155,6 +156,7 @@ router.get('/:id', asyncWrapper(categoryController.getCategoryById))
  *       500:
  *         description: Server error
  */
+
 router.post('/', restrictTo(ADMIN), asyncWrapper(categoryController.createCategory))
 
 /**
@@ -182,7 +184,6 @@ router.post('/', restrictTo(ADMIN), asyncWrapper(categoryController.createCatego
  *       403:
  *         description: Forbidden, insufficient permissions
  */
-
 router.delete('/:id', restrictTo(ADMIN), asyncWrapper(categoryController.deleteCategory))
 
 module.exports = router
