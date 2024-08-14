@@ -33,6 +33,14 @@ const imageService = {
 
       blobStream.end(fileBuffer)
     })
+  },
+
+  deleteImage: async (userId) => {
+    const bucket = admin.storage().bucket()
+    const imagePath = `images/${userId}`
+    const imageRef = bucket.file(imagePath)
+
+    await imageRef.delete()
   }
 }
 
