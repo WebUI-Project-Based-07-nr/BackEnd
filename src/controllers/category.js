@@ -11,22 +11,36 @@ const getCategories = async (req, res) => {
   res.status(200).json(offers)
 }
 
-const createCategory = async (req, res) => {
-    const categoryData = req.body
-
-    try {
-        const newCategory = await categoryService.createCategory({ ...categoryData })
-        res.status(201).json(newCategory)
-    } catch (error) {
-        if (error.code && error.message) {
-            throw error
-        }
-
-        throw createError(500, INTERNAL_SERVER_ERROR)
+const getCategoryNames = async (req, res) => {
+  try {
+    const names = await categoryService.getCategoryNames()
+    res.status(200).json({ success: true, items: names })
+  } catch (error) {
+    if (error.code && error.message) {
+      throw error
     }
+
+    throw createError(500, INTERNAL_SERVER_ERROR)
+  }
+}
+
+const createCategory = async (req, res) => {
+  const categoryData = req.body
+
+  try {
+    const newCategory = await categoryService.createCategory({ ...categoryData })
+    res.status(201).json(newCategory)
+  } catch (error) {
+    if (error.code && error.message) {
+      throw error
+    }
+
+    throw createError(500, INTERNAL_SERVER_ERROR)
+  }
 }
 
 module.exports = {
-    getCategories,
-    createCategory
+  getCategories,
+  createCategory,
+  getCategoryNames
 }

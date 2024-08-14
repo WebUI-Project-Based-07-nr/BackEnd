@@ -4,24 +4,26 @@ const { DOCUMENT_ALREADY_EXISTS, BAD_REQUEST } = require('~/consts/errors')
 
 
 const categoryService = {
-    getCategories: async (pipeline) => {
-        const [response] = await Category.aggregate(pipeline).exec()
-        return response
-    },
-      
-    createCategory: async ({ name, appearance }) => {
-        if (!name || !appearance.icon || !appearance.color) {
-          throw createError(400, BAD_REQUEST)
-        }
-
-        const existingCategory = await Category.findOne({ name })
-        if (existingCategory) {
-            throw createError(409, DOCUMENT_ALREADY_EXISTS('name'))
-        }
-        
-        const category = new Category({ name, appearance })
-        return await category.save()
+  getCategories: async (pipeline) => {
+    const [response] = await Category.aggregate(pipeline).exec()
+    return response
+  },
+  getCategoryNames: async () => {
+    return await Category.find({}, { name: 1 }).lean()
+  },
+  createCategory: async ({ name, appearance }) => {
+    if (!name || !appearance.icon || !appearance.color) {
+      throw createError(400, BAD_REQUEST)
     }
+
+    const existingCategory = await Category.findOne({ name })
+    if (existingCategory) {
+      throw createError(409, DOCUMENT_ALREADY_EXISTS('name'))
+    }
+
+    const category = new Category({ name, appearance })
+    return await category.save()
+  }
 }
 
 module.exports = categoryService

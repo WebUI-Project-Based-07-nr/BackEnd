@@ -110,4 +110,32 @@ router.get('/', asyncWrapper(categoryController.getCategories))
  */
 router.post('/', restrictTo(ADMIN), asyncWrapper(categoryController.createCategory))
 
+/**
+ * @swagger
+ * /categories/names:
+ *   get:
+ *     summary: Retrieve a list of category names
+ *     tags: [Categories]
+ *     responses:
+ *       200:
+ *         description: A list of category names
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         description: The name of the category
+ *                         example: 'Technology'
+ *       401:
+ *         description: Unauthorized user
+ */
+router.get('/names', asyncWrapper(categoryController.getCategoryNames))
+
 module.exports = router
