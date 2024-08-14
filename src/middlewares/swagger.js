@@ -43,6 +43,12 @@ const LessonScheme = require('~/docs/schemas/lesson/lesson')
 
 const SubjectScheme = require('~/docs/schemas/subject/subject')
 
+const GetQuizzesScheme = require('~/docs/schemas/quiz/get-quizzes')
+const GetQuizByIdScheme = require('~/docs/schemas/quiz/get-quiz-by-id')
+const CreateQuizScheme = require('~/docs/schemas/quiz/create-quiz')
+const UpdateQuizScheme = require('~/docs/schemas/quiz/update-quiz')
+const DeleteQuizScheme = require('~/docs/schemas/quiz/delete-quiz')
+
 
 const options = {
   definition: {
@@ -84,7 +90,12 @@ const options = {
         ...GetCategoriesScheme,
         ...CreateCategoryScheme,
         ...LessonScheme,
-        ...SubjectScheme
+        ...SubjectScheme,
+        ...GetQuizzesScheme,
+        ...GetQuizByIdScheme,
+        ...CreateQuizScheme,
+        ...UpdateQuizScheme,
+        ...DeleteQuizScheme
       }
     }
   },

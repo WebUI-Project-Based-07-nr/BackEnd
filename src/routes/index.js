@@ -12,6 +12,7 @@ const location = require('~/routes/location')
 const category = require('~/routes/category')
 const subject = require('~/routes/subjects')
 const lesson = require('~/routes/lesson')
+const quiz = require('~/routes/quiz')
 
 router.use('/auth', auth)
 router.use('/users', user)
@@ -25,5 +26,6 @@ router.use('/location', location)
 router.use('/categories', category)
 router.use('/subjects', subject)
 router.use('/lessons', lesson)
+router.use('/quizzes', quiz)
 
 module.exports = router
