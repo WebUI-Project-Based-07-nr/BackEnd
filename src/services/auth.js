@@ -2,10 +2,7 @@ const tokenService = require('~/services/token')
 const emailService = require('~/services/email')
 const { getUserByEmail, createUser, privateUpdateUser, getUserById } = require('~/services/user')
 const { createError } = require('~/utils/errorsHelper')
-const {
-  encryptPassword,
-  comparePasswords
-} = require('~/utils/users/passwordEncryption')
+const { encryptPassword, comparePasswords } = require('~/utils/users/passwordEncryption')
 const {
   EMAIL_NOT_CONFIRMED,
   INCORRECT_CREDENTIALS,
@@ -27,7 +24,7 @@ const authService = {
     const user = await createUser(role, firstName, lastName, email, password, language, nativeLanguage)
     const confirmToken = tokenService.generateConfirmToken({ id: user._id, role })
     await tokenService.saveToken(user._id, confirmToken, CONFIRM_TOKEN)
-
+    await emailService.sendEmail(email, emailSubject.EMAIL_CONFIRMATION, language, { confirmToken, email, firstName })
     return {
       userId: user._id,
       userEmail: user.email
@@ -41,7 +38,7 @@ const authService = {
       throw createError(401, USER_NOT_FOUND)
     }
 
-    const checkedPassword = await comparePasswords(password, user.password) || isFromGoogle
+    const checkedPassword = (await comparePasswords(password, user.password)) || isFromGoogle
 
     if (!checkedPassword) {
       throw createError(401, INCORRECT_CREDENTIALS)
