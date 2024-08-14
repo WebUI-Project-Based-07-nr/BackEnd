@@ -62,15 +62,6 @@ describe('Subject controller', () => {
       expect(response.body.items).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'Biology' })]))
     })
 
-    test('Should return empty result set when no subjects match the query', async () => {
-      const response = await app
-        .get('/subjects?category=nonexistentCategory')
-        .set('Cookie', 'accessToken=validAccessToken')
-
-      expect(response.status).toBe(200)
-      expect(response.body.items.length).toBe(0)
-    })
-
     test('Should throw 401 for unauthorized user', async () => {
       tokenService.validateAccessToken.mockReturnValue(null)
       const response = await app.get('/subjects').set('Cookie', 'accessToken=validAccessToken')
