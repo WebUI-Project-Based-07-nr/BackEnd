@@ -8,6 +8,10 @@ const categoryService = {
         const [response] = await Category.aggregate(pipeline).exec()
         return response
     },
+
+    getCategoryById: async (id) => {
+        return await Category.findById(id)
+    },
       
     createCategory: async ({ name, appearance }) => {
         if (!name || !appearance.icon || !appearance.color) {
@@ -21,6 +25,10 @@ const categoryService = {
         
         const category = new Category({ name, appearance })
         return await category.save()
+    },
+
+    deleteCategory: async (categoryId) => {
+        await Category.findByIdAndRemove(categoryId).exec()
     }
 }
 

@@ -11,6 +11,14 @@ const getCategories = async (req, res) => {
   res.status(200).json(offers)
 }
 
+const getCategoryById = async (req, res) => {
+  const { id } = req.params
+
+  const category = await categoryService.getCategoryById(id)
+
+  res.status(200).json(category)
+}
+
 const createCategory = async (req, res) => {
     const categoryData = req.body
 
@@ -26,7 +34,17 @@ const createCategory = async (req, res) => {
     }
 }
 
+const deleteCategory = async (req, res) => {
+  const { id } = req.params
+
+  await categoryService.deleteCategory(id)
+
+  res.status(204).end()
+}
+
 module.exports = {
     getCategories,
-    createCategory
+    getCategoryById,
+    createCategory,
+    deleteCategory
 }

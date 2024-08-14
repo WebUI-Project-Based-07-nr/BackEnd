@@ -83,6 +83,53 @@ router.get('/', asyncWrapper(categoryController.getCategories))
 
 /**
  * @swagger
+ * /categories/{id}:
+ *   get:
+ *     summary: Retrieve a single category by its ID
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the category to retrieve
+ *     responses:
+ *       200:
+ *         description: The category data for the specified ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The category ID
+ *                   example: '1234567890abcdef12345678'
+ *                 name:
+ *                   type: string
+ *                   description: The name of the category
+ *                   example: 'Technology'
+ *                 appearance:
+ *                   type: object
+ *                   properties:
+ *                     icon:
+ *                       type: string
+ *                       description: The icon associated with the category
+ *                       example: 'mocked-path-to-icon'
+ *                     color:
+ *                       type: string
+ *                       description: The color associated with the category
+ *                       example: '#66C42C'
+ *       404:
+ *         description: Category not found
+ *       401:
+ *         description: Unauthorized access
+ */
+router.get('/:id', asyncWrapper(categoryController.getCategoryById))
+
+/**
+ * @swagger
  *   post:
  *     summary: Create a new category
  *     tags: [Category]
@@ -109,5 +156,33 @@ router.get('/', asyncWrapper(categoryController.getCategories))
  *         description: Server error
  */
 router.post('/', restrictTo(ADMIN), asyncWrapper(categoryController.createCategory))
+
+/**
+ * @swagger
+ * /categories/{id}:
+ *   delete:
+ *     summary: Delete a category by its ID
+ *     tags: [Categories]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the category to delete
+ *     responses:
+ *       204:
+ *         description: Category deleted successfully, no content
+ *       404:
+ *         description: Category not found
+ *       401:
+ *         description: Unauthorized access
+ *       403:
+ *         description: Forbidden, insufficient permissions
+ */
+
+router.delete('/:id', restrictTo(ADMIN), asyncWrapper(categoryController.deleteCategory))
 
 module.exports = router
