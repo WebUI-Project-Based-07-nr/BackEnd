@@ -2,40 +2,12 @@ const subjectService = require('~/services/subject')
 const { createError } = require('~/utils/errorsHelper')
 const { BAD_REQUEST } = require('~/consts/errors')
 const { INTERNAL_SERVER_ERROR } = require('~/consts/errors')
-const { ObjectId } = require('mongodb')
+
+const subjectsAggregateOptions = require('~/utils/subjects/subjectsAggregateOptions')
 
 const getSubjects = async (req, res) => {
   try {
-    const { category, limit = 100, skip = 0 } = req.query
-
-    if (isNaN(limit) || isNaN(skip)) {
-      throw createError(400, BAD_REQUEST('Limit and skip must be numbers'))
-    }
-
-    const filter = {}
-    if (category) {
-      filter.category = new ObjectId(category)
-    }
-
-    const pipeline = [
-      { $match: filter },
-      { $skip: parseInt(skip) },
-      { $limit: parseInt(limit) },
-      {
-        $lookup: {
-          from: 'categories',
-          localField: 'category',
-          foreignField: '_id',
-          as: 'category'
-        }
-      },
-      {
-        $unwind: {
-          path: '$category',
-          preserveNullAndEmptyArrays: true
-        }
-      }
-    ]
+    const pipeline = subjectsAggregateOptions(req.query)
 
     const subjects = await subjectService.getSubjects(pipeline)
 
