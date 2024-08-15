@@ -1,4 +1,5 @@
 const User = require('~/models/user')
+const imageService = require('~/services/image')
 const { createError } = require('~/utils/errorsHelper')
 const { encryptPassword } = require('~/utils/users/passwordEncryption')
 
@@ -103,6 +104,12 @@ const userService = {
   },
 
   deleteUser: async (id) => {
+    const user = await User.findById(id)
+
+    if (user.photo) {
+      await imageService.deleteImage(id)
+    }
+
     await User.findByIdAndRemove(id).exec()
   }
 }
