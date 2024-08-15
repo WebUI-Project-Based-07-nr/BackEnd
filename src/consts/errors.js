@@ -7,6 +7,10 @@ const errors = {
     code: 'USER_NOT_FOUND',
     message: 'User with the specified email was not found.'
   },
+  AUTHOR_NOT_FOUND: {
+    code: 'AUTHOR_NOT_FOUND',
+    message: 'Author with the specified id was not found',
+  },
   INCORRECT_CREDENTIALS: {
     code: 'INCORRECT_CREDENTIALS',
     message: 'The password you entered is incorrect.'
@@ -70,6 +74,14 @@ const errors = {
   TEMPLATE_NOT_FOUND: {
     code: 'TEMPLATE_NOT_FOUND',
     message: 'The requested template was not found.'
+  },
+  DUPLICATE_LESSON: {
+    code: 'DUPLICATE_LESSON',
+    message: 'A lesson with the same title, author, and category already exists.'
+  },
+  DUPLICATE_QUIZ: {
+    code: 'DUPLICATE_QUIZ',
+    message: 'A quiz with the same title already exists'
   },
   BAD_RESET_TOKEN: {
     code: 'BAD_RESET_TOKEN',

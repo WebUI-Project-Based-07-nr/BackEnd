@@ -1,4 +1,5 @@
 const User = require('~/models/user')
+const { encryptPassword } = require('~/utils/users/passwordEncryption')
 
 const testUserAuthentication = async (app, testUser = {}) => {
   const qtyOfMandatorySignupFields = 5
@@ -10,12 +11,13 @@ const testUserAuthentication = async (app, testUser = {}) => {
       email: 'tartdrilling@gmail.com',
       password: 'Qwerty123@',
       FAQ: { student: [{ question: 'question1', answer: 'answer1' }] },
+      nativeLanguage: 'Ukrainian',
       isEmailConfirmed: true,
       lastLoginAs: testUser.role ? testUser.role : 'student'
     }
   }
 
-  await User.create({ ...testUser })
+  await User.create({ ...testUser, password: await encryptPassword(testUser.password) })
 
   const loginUserResponse = await app.post('/auth/login').send({ email: testUser.email, password: testUser.password })
 

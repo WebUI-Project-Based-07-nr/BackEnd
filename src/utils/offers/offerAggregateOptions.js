@@ -145,7 +145,18 @@ const offerAggregateOptions = (query, params) => {
       }
     },
     {
+      $lookup: {
+        from: 'subjects',
+        localField: 'subject',
+        foreignField: '_id',
+        as: 'subject'
+      }
+    },
+    {
       $unwind: '$category'
+    },
+    {
+      $unwind: '$subject'
     },
     {
       $match: match

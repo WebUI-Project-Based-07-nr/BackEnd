@@ -4,7 +4,8 @@ const {
   INTERNAL_SERVER_ERROR,
   BAD_REQUEST
 } = require('~/consts/errors')
-const { createError } = require("~/utils/errorsHelper")
+const { createError } = require('~/utils/errorsHelper')
+
 
 const getCategories = async (req, res) => {
   const pipeline = categoryAggregateOptions(req.query)

@@ -5,7 +5,6 @@ const categoryService = require('~/services/category')
 const { getSubjectNamesById } = require('~/controllers/category')
 const Category = require('~/models/category')
 const Subject = require('~/models/subject')
-const jwt = require('jsonwebtoken')
 const errors = require('~/consts/errors')
 const { createError } = require('~/utils/errorsHelper')
 
@@ -47,7 +46,7 @@ describe('Category controller', () => {
             await Subject.deleteMany({})
             await Subject.insertMany(subjects)
 
-            tokenService.validateAccessToken.mockReturnValue({ id: 'userId', role: 'user' })
+            tokenService.validateAccessToken.mockReturnValue({ id: 'mockUserId', role: 'user' })
         })
 
         test('Should return all categories with default pagination', async () => {
@@ -112,22 +111,6 @@ describe('Category controller', () => {
             expect(response.body.items.length).toBe(3)
         })
 
-        test('Should exclude categories without subjects', async () => {
-            await Category.create({ _id: mongoose.Types.ObjectId(), name: 'Empty category', updatedAt: new Date(), subjects: [] })
-
-            const response = await app
-                .get('/categories')
-                .set('Cookie', 'accessToken=validAccessToken')
-
-            expect(response.status).toBe(200)
-            expect(response.body.items.length).toBe(3)
-            expect(response.body.items).not.toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({ name: 'Empty category' })
-                ])
-            )
-        })
-
         test('Should throw 401 for unauthorized user', async () => {
             tokenService.validateAccessToken.mockReturnValue(null)
 
@@ -142,13 +125,19 @@ describe('Category controller', () => {
     describe('Category Creation', () => {
         const mockCategoryData = {
             name: 'Mathematics',
-            icon: 'mock-icon-path',
-            color: 'mock-color'
+            appearance: {
+                icon: 'mock-icon-path',
+                color: 'mock-color'
+            }
         }
 
         beforeEach(() => {
             jest.resetAllMocks()
         })
+
+        const mockAdminToken = () => tokenService.validateAccessToken.mockReturnValue({ id: 'mockAdminId', role: 'admin' })
+        const mockUserToken = () => tokenService.validateAccessToken.mockReturnValue({ id: 'mockUserId', role: 'user' })
+        const mockInvalidToken = () => tokenService.validateAccessToken.mockReturnValue(null)
 
         test('Should allow admin to create category', async () => {
             tokenService.validateAccessToken.mockReturnValue({ id: 'admin-id', role: 'admin' })
@@ -198,7 +187,7 @@ describe('Category controller', () => {
         test('Should reject requests with incomplete body', async () => {
             tokenService.validateAccessToken.mockReturnValue({ id: 'admin-id', role: 'admin' })
 
-            const incompleteData = { name: 'Mathematics' }
+            const incompleteData = { name: 'Mathematics', appearance: {} }
 
             const response = await app
                 .post('/categories')

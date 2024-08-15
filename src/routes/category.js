@@ -8,7 +8,7 @@ const { authMiddleware, restrictTo } = require('~/middlewares/auth')
 const Category = require('~/models/category')
 
 const {
-    roles: { ADMIN }
+  roles: { ADMIN }
 } = require('~/consts/auth')
 
 const params = [{ model: Category, idName: 'id' }]
@@ -150,7 +150,6 @@ router.get('/:id/subjects/names', isEntityValid({ params }), asyncWrapper(catego
  *       500:
  *         description: Server error
  */
-
 router.post('/', restrictTo(ADMIN), asyncWrapper(categoryController.createCategory))
 
 module.exports = router

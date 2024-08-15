@@ -67,8 +67,10 @@ describe('Category service', () => {
     describe('Creating Categories', () => {
         const mockCategoryData = {
             name: 'Mathematics',
-            icon: 'mock-icon-path',
-            color: 'mock-color'
+            appearance: {
+                icon: 'mock-icon-path',
+                color: 'mock-color'
+            }
         }
 
         test('Should create and return a new category', async () => {
@@ -92,7 +94,9 @@ describe('Category service', () => {
         test('Should reject with missing fields', async () => {
             const incompleteData = {
                 name: 'Mathematics',
-                icon: 'mock-icon-path'
+                appearance: {
+                    icon: 'mock-icon-path'
+                }
             }
 
             await expect(categoryService.createCategory({ ...incompleteData }))

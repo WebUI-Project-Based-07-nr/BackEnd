@@ -1,6 +1,6 @@
 const Category = require('~/models/category')
 const Subject = require('~/models/subject')
-const { createError } = require("~/utils/errorsHelper")
+const { createError } = require('~/utils/errorsHelper')
 const { DOCUMENT_ALREADY_EXISTS, BAD_REQUEST } = require('~/consts/errors')
 
 
@@ -10,17 +10,17 @@ const categoryService = {
         return response
     },
       
-    createCategory: async ({ name, icon, color }) => {
-        if (!name || !icon || !color) {
-            throw createError(400, BAD_REQUEST)
+    createCategory: async ({ name, appearance }) => {
+        if (!name || !appearance.icon || !appearance.color) {
+          throw createError(400, BAD_REQUEST)
         }
 
         const existingCategory = await Category.findOne({ name })
         if (existingCategory) {
             throw createError(409, DOCUMENT_ALREADY_EXISTS('name'))
         }
-
-        const category = new Category({ name, icon, color })
+        
+        const category = new Category({ name, appearance })
         return await category.save()
     },
 

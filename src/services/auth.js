@@ -23,12 +23,11 @@ const {
 } = require('~/consts/auth')
 
 const authService = {
-  signup: async (role, firstName, lastName, email, password, language) => {
-    const user = await createUser(role, firstName, lastName, email, password, language)
-
+  signup: async (role, firstName, lastName, email, password, language, nativeLanguage) => {
+    const user = await createUser(role, firstName, lastName, email, password, language, nativeLanguage)
     const confirmToken = tokenService.generateConfirmToken({ id: user._id, role })
     await tokenService.saveToken(user._id, confirmToken, CONFIRM_TOKEN)
-    await emailService.sendEmail(email, emailSubject.EMAIL_CONFIRMATION, language, { confirmToken, email, firstName })
+
     return {
       userId: user._id,
       userEmail: user.email

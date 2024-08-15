@@ -1,4 +1,5 @@
 const User = require('~/models/user')
+const imageService = require('~/services/image')
 const { createError } = require('~/utils/errorsHelper')
 const { encryptPassword } = require('~/utils/users/passwordEncryption')
 
@@ -44,7 +45,7 @@ const userService = {
     return user
   },
 
-  createUser: async (role, firstName, lastName, email, password, appLanguage, isEmailConfirmed = false) => {
+  createUser: async (role, firstName, lastName, email, password, appLanguage, nativeLanguage, isEmailConfirmed = false) => {
     const duplicateUser = await userService.getUserByEmail(email)
 
     if (duplicateUser) {
@@ -61,6 +62,7 @@ const userService = {
       lastLoginAs: role,
       password: hashedPassword,
       appLanguage,
+      nativeLanguage,
       isEmailConfirmed
     })
   },
@@ -102,6 +104,12 @@ const userService = {
   },
 
   deleteUser: async (id) => {
+    const user = await User.findById(id)
+
+    if (user.photo) {
+      await imageService.deleteImage(id)
+    }
+
     await User.findByIdAndRemove(id).exec()
   }
 }
