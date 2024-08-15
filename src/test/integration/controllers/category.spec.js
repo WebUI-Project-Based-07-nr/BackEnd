@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const { serverInit, serverCleanup, stopServer } = require('~/test/setup')
 const tokenService = require('~/services/token')
 const categoryService = require('~/services/category')
+const { getSubjectNamesById } = require('~/controllers/category')
 const Category = require('~/models/category')
 const Subject = require('~/models/subject')
 const errors = require('~/consts/errors')
@@ -139,7 +140,7 @@ describe('Category controller', () => {
         const mockInvalidToken = () => tokenService.validateAccessToken.mockReturnValue(null)
 
         test('Should allow admin to create category', async () => {
-            mockAdminToken()
+            tokenService.validateAccessToken.mockReturnValue({ id: 'admin-id', role: 'admin' })
 
             const response = await app
                 .post('/categories')
@@ -150,7 +151,7 @@ describe('Category controller', () => {
         })
 
         test('Should reject non-admin users', async () => {
-            mockUserToken()
+            tokenService.validateAccessToken.mockReturnValue({ id: 'user-id', role: 'user' })
 
             const response = await app
                 .post('/categories')
@@ -165,7 +166,7 @@ describe('Category controller', () => {
         })
 
         test('Should reject requests with invalid token', async () => {
-            mockInvalidToken()
+            jwt.verify = jest.fn(() => { throw new Error('Invalid token') })
 
             const response = await app
                 .post('/categories')
@@ -184,7 +185,7 @@ describe('Category controller', () => {
         })
 
         test('Should reject requests with incomplete body', async () => {
-            mockAdminToken()
+            tokenService.validateAccessToken.mockReturnValue({ id: 'admin-id', role: 'admin' })
 
             const incompleteData = { name: 'Mathematics', appearance: {} }
 
@@ -201,7 +202,7 @@ describe('Category controller', () => {
         })
 
         test('Should handle 500 internal server errors', async () => {
-            mockAdminToken()
+            tokenService.validateAccessToken.mockReturnValue({ id: 'admin-id', role: 'admin' })
 
             jest.spyOn(categoryService, 'createCategory')
                 .mockImplementation(() => {
@@ -218,6 +219,55 @@ describe('Category controller', () => {
                 ...createError(500, errors.INTERNAL_SERVER_ERROR),
                 message: ''
             })
+        })
+    })
+
+    describe('Subject Retrieval by Category ID', () => {
+        const categories = [
+            { _id: mongoose.Types.ObjectId(), name: 'Technology', updatedAt: new Date(), subjects: [] },
+            { _id: mongoose.Types.ObjectId(), name: 'Health', updatedAt: new Date(), subjects: [] },
+            { _id: mongoose.Types.ObjectId(), name: 'Finance', updatedAt: new Date(), subjects: [] }
+        ]
+
+        const subjects = [
+            { _id: mongoose.Types.ObjectId(), name: 'AI', category: categories[0]._id },
+            { _id: mongoose.Types.ObjectId(), name: 'Biology', category: categories[1]._id },
+            { _id: mongoose.Types.ObjectId(), name: 'Finance 101', category: categories[2]._id }
+        ]
+
+        beforeEach(async () => {
+            await Category.deleteMany({})
+            await Category.insertMany(categories)
+
+            await Subject.deleteMany({})
+            await Subject.insertMany(subjects)
+
+            tokenService.validateAccessToken.mockReturnValue({ id: 'userId', role: 'user' })
+        })
+
+        test('Should return subjects for a valid Category ID', async () => {
+            const response = await app
+                .get(`/categories/${categories[0]._id}/subjects/names`)
+                .set('Cookie', 'accessToken=validAccessToken')
+
+            expect(response.status).toBe(200)
+            expect(response.body).toEqual(['AI', 'Biology', 'Finance 101'])
+        })
+
+        test('Should throw 400 when id is not provided', async () => {
+            const mockReq = {
+                params: {  }
+            }
+
+            const mockRes = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            }
+
+            await expect(getSubjectNamesById(mockReq, mockRes)).rejects.toThrow(createError(400, errors.BAD_REQUEST))
+
+            expect(mockRes.status).not.toHaveBeenCalled()
+            expect(mockRes.json).not.toHaveBeenCalled()
         })
     })
 })

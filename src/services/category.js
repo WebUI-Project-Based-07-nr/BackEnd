@@ -1,4 +1,5 @@
 const Category = require('~/models/category')
+const Subject = require('~/models/subject')
 const { createError } = require('~/utils/errorsHelper')
 const { DOCUMENT_ALREADY_EXISTS, BAD_REQUEST } = require('~/consts/errors')
 
@@ -21,6 +22,11 @@ const categoryService = {
         
         const category = new Category({ name, appearance })
         return await category.save()
+    },
+
+    getSubjectNamesById: async (categoryId) => {
+        const subjects = await Subject.find({ categoryId }).select('name -_id')
+        return subjects.map(subject => subject.name)
     }
 }
 
