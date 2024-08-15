@@ -28,7 +28,7 @@ const categoryService = {
     },
 
     deleteCategory: async (categoryId) => {
-        await Category.findByIdAndRemove(categoryId).exec()
+        await Category.findByIdAndRemove(categoryId)
     }
 }
 
