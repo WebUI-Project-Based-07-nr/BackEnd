@@ -26,14 +26,16 @@ const offerAggregateOptions = (query, params) => {
   if (search) {
     const searchArray = search.trim().split(' ')
     const firstNameRegex = getRegex(searchArray[0])
-    const lastNameRegex = getRegex(searchArray[1])
+    const lastNameRegex = searchArray[1] ? getRegex(searchArray[1]) : null
 
     const additionalFields = authorId
       ? [{ 'subject.name': getRegex(search) }]
-      : [
+      : lastNameRegex
+        ? [
           { 'author.firstName': firstNameRegex, 'author.lastName': lastNameRegex },
           { 'author.firstName': lastNameRegex, 'author.lastName': firstNameRegex }
         ]
+        : [{ 'author.firstName': firstNameRegex }, { 'author.lastName': firstNameRegex }]
 
     match['$or'] = [{ title: getRegex(search) }, ...additionalFields]
   }
@@ -47,11 +49,11 @@ const offerAggregateOptions = (query, params) => {
   }
 
   if (proficiencyLevel) {
-    match.proficiencyLevel = { $in: proficiencyLevel }
+    match.proficiencyLevel = { $in: proficiencyLevel.split(' ') }
   }
 
   if (price) {
-    const [minPrice, maxPrice] = price
+    const [minPrice, maxPrice] = price.split(' ')
     match.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) }
   }
 
@@ -64,7 +66,7 @@ const offerAggregateOptions = (query, params) => {
   }
 
   if (languages) {
-    match.languages = { $in: languages }
+    match.languages = { $in: languages.split(' ') }
   }
 
   if (status) {
